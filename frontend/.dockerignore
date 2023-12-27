@@ -1,0 +1,13 @@
+
+# Node and React
+node_modules
+build
+npm-debug.log
+yarn-error.log
+
+# Cypress
+cypress
+cypress.json
+
+# Docker
+Dockerfile
