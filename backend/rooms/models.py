@@ -1,12 +1,11 @@
 from django.db import models
 
-from ..users.models import User
 
 class Room(models.Model):
     name = models.CharField(max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    creator = models.OneToOneField(User, related_name='created_room', on_delete=models.CASCADE)
+    creator = models.OneToOneField('users.User', related_name='created_room', on_delete=models.CASCADE)
 
     url = models.URLField()
     password = models.CharField(max_length=100, blank=True, null=True)
@@ -15,7 +14,7 @@ class Room(models.Model):
         return self.name
 
 class Member(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField('users.User', on_delete=models.CASCADE)
 
     room = models.ForeignKey(Room, related_name='members', on_delete=models.CASCADE)
 
@@ -25,7 +24,7 @@ class Member(models.Model):
 
 class Messages(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
 
     message = models.CharField(max_length=100)
 
