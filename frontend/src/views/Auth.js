@@ -1,84 +1,107 @@
 import '../App.css';
 import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from 'axios';
+import axios from "axios";
+import React, { useRef } from 'react';
 
 function Auth() {
-    const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
-    const loginBtn = document.getElementById('login');
-    const email = 'test@test.test';
-    const username = 'test';
-    const password = 'test';
+    const regUsernameRef = useRef(null);
+    const regEmailRef = useRef(null);
+    const regPasswordRef = useRef(null);
 
-    function handleLoginClick() {
+    const loginUsernameRef = useRef(null);
+    const loginPasswordRef = useRef(null);
+    
+    function SelectLogin() {
+        const container = document.getElementById('container');
+        const loginBtn = document.getElementById('login');
+        container.classList.remove("active");
+    };
+    
+    function SelectRegister() {
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        container.classList.add("active");
+    };
+    
+    function HandleLoginClick() {
         const respone = axios.post('http://127.0.0.1:8000/api/auth/login/', {
-            username: username,
-            password: password,
+            username: loginUsernameRef.current.value,
+            password: loginPasswordRef.current.value,
         })
-
+    
         const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
         localStorage.setItem('token', respone.data.token);
         localStorage.getItem('token').console.log();
-
+    };
+    
+    function HandleRegisterClick() {
+        const respone = axios.post('http://127.0.0.1:8000/api/auth/register/', {
+            username: regUsernameRef.current.value,
+            email: regEmailRef.current.value,
+            password: regPasswordRef.current.value,
+        })
+    
+        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
+        localStorage.setItem('token', respone.data.token);
+        localStorage.getItem('token').console.log();
     };
 
- 
-    return(
-        <div class="container" id="container">
-            <div class="form-container sign-up">
+    return (
+        <div className="container" id="container">
+            <div className="form-container sign-up">
                 <form>
                     <h1>Создайте аккаунт</h1>
-                    <div class="social-icons">
-                        <a href="#" class="icon">
+                    <div className="social-icons">
+                        <a href="#" className="icon">
                             <FontAwesomeIcon icon={faVk} />
                         </a>
-                        <a href="#" class="icon">
+                        <a href="#" className="icon">
                             <FontAwesomeIcon icon={faGoogle} />
                         </a>
                     </div>
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="username" placeholder="Имя"></input>
-                    <input type="email" placeholder="Email"></input>
-                    <input type="password" placeholder="Пароль"></input>
-                    <button>Создать</button>
+                    <input type="text" placeholder="Имя" ref={regUsernameRef}></input>
+                    <input type="email" placeholder="Email" ref={regEmailRef}></input>
+                    <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
+                    <button onClick={HandleRegisterClick}>Создать</button>
                 </form>
             </div>
-            <div class="form-container sign-in">
+            <div className="form-container sign-in">
                 <form>
                     <h1>Войти в аккаунт</h1>
-                    <div class="social-icons">
-                        <a href="#" class="icon">
+                    <div className="social-icons">
+                        <a href="#" className="icon">
                             <FontAwesomeIcon icon={faVk} />
                         </a>
-                        <a href="#" class="icon">
+                        <a href="#" className="icon">
                             <FontAwesomeIcon icon={faGoogle} />
                         </a>
                     </div>
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="username" placeholder="Логин"></input>
-                    <input type="password" placeholder="Пароль"></input>
+                    <input type="email" placeholder="Email" ref={loginUsernameRef}></input>
+                    <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
-                    <button onClick={handleLoginClick}>Войти</button>
+                    <button onClick={HandleLoginClick}>Войти</button>
                 </form>
             </div>
-            <div class="toggle-container">
-                <div class="toggle">
-                    <div class="toggle-panel toggle-left">
+            <div className="toggle-container">
+                <div className="toggle">
+                    <div className="toggle-panel toggle-left">
                         <h1>С возвращением!</h1>
                         <p>Введите свои персональные данные, чтобы пользоваться полным функционалом сайта</p>
-                        <button class="hidden" id="login">
+                        <button className="hidden" id="login" onClick={SelectLogin}>
                             Войти
                         </button>
                     </div>
-                    <div class="toggle-panel toggle-right">
+                    <div className="toggle-panel toggle-right">
                         <h1>Привет, друг!</h1>
                         <p>Зарегистрируйтесь, введя свои персональные данные</p>
-                        <button class="hidden" id="register">
+                        <button className="hidden" id="register" onClick={SelectRegister}>
                             Создать
                         </button>
                     </div>
