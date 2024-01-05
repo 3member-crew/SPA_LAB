@@ -1,22 +1,53 @@
 import '../App.css';
 import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-
-function onLoginClick() {
-    const container = document.getElementById('container');
-    const loginBtn = document.getElementById('login');
-    container.classList.remove("active");
-};
-
-function onRegisterClick() {
-    const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
-    container.classList.add("active");
-};
+import axios from "axios";
+import React, { useRef } from 'react';
 
 function Auth() {
-    return(
+    const regUsernameRef = useRef(null);
+    const regEmailRef = useRef(null);
+    const regPasswordRef = useRef(null);
+
+    const loginUsernameRef = useRef(null);
+    const loginPasswordRef = useRef(null);
+    
+    function SelectLogin() {
+        const container = document.getElementById('container');
+        const loginBtn = document.getElementById('login');
+        container.classList.remove("active");
+    };
+    
+    function SelectRegister() {
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        container.classList.add("active");
+    };
+    
+    function HandleLoginClick() {
+        const respone = axios.post('http://127.0.0.1:8000/api/auth/login/', {
+            username: loginUsernameRef.current.value,
+            password: loginPasswordRef.current.value,
+        })
+    
+        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
+        localStorage.setItem('token', respone.data.token);
+        localStorage.getItem('token').console.log();
+    };
+    
+    function HandleRegisterClick() {
+        const respone = axios.post('http://127.0.0.1:8000/api/auth/register/', {
+            username: regUsernameRef.current.value,
+            email: regEmailRef.current.value,
+            password: regPasswordRef.current.value,
+        })
+    
+        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
+        localStorage.setItem('token', respone.data.token);
+        localStorage.getItem('token').console.log();
+    };
+
+    return (
         <div className="container" id="container">
             <div className="form-container sign-up">
                 <form>
@@ -32,10 +63,10 @@ function Auth() {
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="text" placeholder="Имя"></input>
-                    <input type="email" placeholder="Email"></input>
-                    <input type="password" placeholder="Пароль"></input>
-                    <button>Создать</button>
+                    <input type="text" placeholder="Имя" ref={regUsernameRef}></input>
+                    <input type="email" placeholder="Email" ref={regEmailRef}></input>
+                    <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
+                    <button onClick={HandleRegisterClick}>Создать</button>
                 </form>
             </div>
             <div className="form-container sign-in">
@@ -52,10 +83,10 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="email" placeholder="Email"></input>
-                    <input type="password" placeholder="Пароль"></input>
+                    <input type="email" placeholder="Email" ref={loginUsernameRef}></input>
+                    <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
-                    <button>Войти</button>
+                    <button onClick={HandleLoginClick}>Войти</button>
                 </form>
             </div>
             <div className="toggle-container">
@@ -63,14 +94,14 @@ function Auth() {
                     <div className="toggle-panel toggle-left">
                         <h1>С возвращением!</h1>
                         <p>Введите свои персональные данные, чтобы пользоваться полным функционалом сайта</p>
-                        <button className="hidden" id="login" onClick={onLoginClick}>
+                        <button className="hidden" id="login" onClick={SelectLogin}>
                             Войти
                         </button>
                     </div>
                     <div className="toggle-panel toggle-right">
                         <h1>Привет, друг!</h1>
                         <p>Зарегистрируйтесь, введя свои персональные данные</p>
-                        <button className="hidden" id="register" onClick={onRegisterClick}>
+                        <button className="hidden" id="register" onClick={SelectRegister}>
                             Создать
                         </button>
                     </div>
