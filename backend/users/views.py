@@ -39,8 +39,7 @@ def login(request):
         token = get_token(user)
         print(token.key)
         return Response({
-            'token':token.key},
-            status=status.HTTP_200_OK)
+            'token':token.key})
     
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
