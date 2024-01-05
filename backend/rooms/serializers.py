@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Messages, Room, Member
+from .models import Messages, Room, Member, Video
 from ..users.serializers import UserSerializer
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -19,6 +19,7 @@ class MessagesSerializer(serializers.ModelSerializer):
     room = RoomSerializer(read_only=True)
 
     class Meta:
+        model = Messages
         fields = '__all__'
     
 class MembersSerializer(serializers.ModelSerializer):
@@ -26,4 +27,11 @@ class MembersSerializer(serializers.ModelSerializer):
     room = RoomSerializer(read_only=True)
     class Meta:
         model = Member
+        fields = '__all__'
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    room = RoomSerializer(read_only=True)
+    class Meta:
+        model = Video
         fields = '__all__'

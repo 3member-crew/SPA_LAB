@@ -34,5 +34,17 @@ class Messages(models.Model):
         ordering = ['-timestamp']
 
     def __str__(self) -> str:
-        return super().__str__()
+        return f'message{self.pk}'
 
+
+class Video(models.Model):
+    room = models.ForeignKey(Room, related_name='videos', on_delete=models.CASCADE)
+    video_url = models.URLField()
+    added_at = models.DateTimeField(auto_now_add=True)
+    current_time = models.FloatField(default=0.0)
+
+    class Meta:
+        ordering = ['-added_at']
+    
+    def __str__(self) -> str:
+        return f'video{self.pk}'

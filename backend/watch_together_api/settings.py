@@ -4,9 +4,6 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -30,6 +27,7 @@ INSTALLED_APPS = [
     'rooms',
     'corsheaders',
     'rest_framework.authtoken',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -62,8 +60,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'watch_together_api.wsgi.application'
+ASGI_APPLICATION = 'watch_together_api.asgi.application'
 
+CHANNELS_REDIS_HOST = str(os.environ.get('CHANNELS_REDIS_HOST', default='localhost'))
+CHANNELS_REDIS_PORT = int(os.environ.get('CHANNELS_REDIS_PORT', default=6379))
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(CHANNELS_REDIS_HOST,CHANNELS_REDIS_PORT)],
+        },
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -76,7 +85,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -95,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -107,21 +114,21 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
 # FRONTEND PORT ACCESS
+
 CORS_ORIGIN_ALLOW_ALL = True 
 
 # COOKIES FOR FRONTEND
+
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {

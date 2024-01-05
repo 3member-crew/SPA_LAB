@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import User
 from .serializers import UserSerializer
 from .utils import create_token, get_token
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -39,8 +39,7 @@ def login(request):
         token = get_token(user)
         print(token.key)
         return Response({
-            'token':token.key},
-            status=status.HTTP_200_OK)
+            'token':token.key})
     
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
