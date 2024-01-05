@@ -1,20 +1,29 @@
 import '../App.css';
 import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 
 function Auth() {
     const container = document.getElementById('container');
     const registerBtn = document.getElementById('register');
     const loginBtn = document.getElementById('login');
+    const email = 'test@test.test';
+    const username = 'test';
+    const password = 'test';
 
-    registerBtn.addEventListener('click', () => {
-        container.classList.add("active");
-    });
+    function handleLoginClick() {
+        const respone = axios.post('http://127.0.0.1:8000/api/auth/login/', {
+            username: username,
+            password: password,
+        })
 
-    loginBtn.addEventListener('click', () => {
-        container.classList.remove("active");
-    });
+        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
+        localStorage.setItem('token', respone.data.token);
+        localStorage.getItem('token').console.log();
 
+    };
+
+ 
     return(
         <div class="container" id="container">
             <div class="form-container sign-up">
@@ -31,7 +40,7 @@ function Auth() {
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="text" placeholder="Имя"></input>
+                    <input type="username" placeholder="Имя"></input>
                     <input type="email" placeholder="Email"></input>
                     <input type="password" placeholder="Пароль"></input>
                     <button>Создать</button>
@@ -51,10 +60,10 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="email" placeholder="Email"></input>
+                    <input type="username" placeholder="Логин"></input>
                     <input type="password" placeholder="Пароль"></input>
                     <a href="#">Забыли пароль?</a>
-                    <button>Войти</button>
+                    <button onClick={handleLoginClick}>Войти</button>
                 </form>
             </div>
             <div class="toggle-container">

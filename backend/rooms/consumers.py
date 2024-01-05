@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Video, Room
+from asgiref.sync import sync_to_async
 
 class RoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -20,53 +21,56 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.close()
 
     async def disconnect(self, close_code):
-        # Отключение от комнаты
+
+        user = self.scope['user']
+        is_admin = await self.check_admin(user)
+
         await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    async def receive(self, text_data):
-        # Обработка приема сообщений
-        text_data_json = json.loads(text_data)
-
-        if 'message' in text_data_json:
-            message = text_data_json['message']
-            await self.channel_layer.group_send(
                 self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': message
-                }
+                self.channel_name
             )
         
-        if 'current_time' in text_data_json:
-            current_time = text_data_json['current_time']
+        if is_admin:
+            room_id = self.scope['url_route']['kwargs']['room_id']
+            await self.close_room(room_id)
 
-            video = Video.objects.get(room=self.room_name)
-            video.current_time = current_time
-            video.save()
-
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'video_update',
-                    'current_time': current_time
-                }
-            )
-
-    async def chat_message(self, event):
-        # Отправка сообщения в WebSocket
-        message = event['message']
-
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
+    async def check_admin(self, user):
+        room_id = self.scope['url_route']['kwargs']['room_id']
+        try:
+            room = await sync_to_async(Room.objects.get)(id=room_id)
+            return user == room.creator
+        except Room.DoesNotExist:
+            return False
     
-    async def video_update(self, event):
-        current_time = event['current_time']
-
-        await self.send(text_data=json.dumps({
-            'current_time': current_time
-        }))
+    async def close_room(self, room_id):
+         
+        try:
+            room = await sync_to_async(Room.objects.get)(id=room_id)
+            # Дополнительная логика закрытия комнаты
+            room.delete()
+        except Room.DoesNotExist:
+            pass
     
+    async def forward_signal(self, event):
+        signal_data = event['signal_data']
+        await self.send(text_data=json.dumps(signal_data))
+
+    
+    async def handle_signal(self, room_id, data):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'forward_signal',
+            'signal_data': data,
+        })
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        signal_type = data.get('signal_type')
+
+        user = self.scope['user']
+        is_admin = await self.check_admin(user)
+        if is_admin:
+            data = json.loads(text_data)
+            signal_type = data.get('signal_type')
+
+            if signal_type in ['offer', 'answer', 'ice_candidate']:
+                await self.handle_signal(data)
