@@ -209,3 +209,32 @@ body {
 .container.active .toggle-right {
     transform: translateX(200%);
 }
+
+#nav-wrap {
+    padding: 50px 100px 50px 100px;
+    background-color: #333;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+    
+}
+
+#header-wrap {
+    display: flex;
+    flex-direction: row;
+}
+
+#logo {
+    padding-left: 100px;
+    position: absolute;
+    left: 0;
+    
+}
+
+#navbar {
+    padding-right: 100px;
+    position: absolute;
+    right: 0;
+}
