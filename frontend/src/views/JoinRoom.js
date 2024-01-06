@@ -3,6 +3,7 @@ import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router';
 
 function JoinRoom() {
     const createRoomNameRef = useRef(null);
@@ -10,6 +11,8 @@ function JoinRoom() {
 
     const connectRoomNameRef = useRef(null);
     const connectRoomPasswordRef = useRef(null);
+
+    const navigate = useNavigate();
     
     function SelectConnect() {
         const container = document.getElementById('container');
@@ -24,11 +27,15 @@ function JoinRoom() {
     function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
+
+        navigate('/room');
     };
     
     function HandleCreateClick() {
         const roomName = createRoomNameRef.current.value;
         const roomPassword = createRoomPasswordRef.current.value;
+
+        navigate('/room');
     };
 
     return (
