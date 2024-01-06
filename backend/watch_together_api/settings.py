@@ -62,17 +62,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'watch_together_api.wsgi.application'
 ASGI_APPLICATION = 'watch_together_api.asgi.application'
 
-CHANNELS_REDIS_HOST = str(os.environ.get('CHANNELS_REDIS_HOST', default='localhost'))
-CHANNELS_REDIS_PORT = int(os.environ.get('CHANNELS_REDIS_PORT', default=6379))
+#CHANNELS_REDIS_HOST = str(os.environ.get('CHANNELS_REDIS_HOST', default='localhost'))
+#CHANNELS_REDIS_PORT = int(os.environ.get('CHANNELS_REDIS_PORT', default=6379))
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [(CHANNELS_REDIS_HOST,CHANNELS_REDIS_PORT)],
+        'BACKEND': 'channels_redis.core.InMemoryChannelLayer',
         },
-    },
 }
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

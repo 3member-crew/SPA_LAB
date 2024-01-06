@@ -31,46 +31,66 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
         
         if is_admin:
-            room_id = self.scope['url_route']['kwargs']['room_id']
-            await self.close_room(room_id)
+            await self.close_room(self.room_name)
 
     async def check_admin(self, user):
-        room_id = self.scope['url_route']['kwargs']['room_id']
+        room_name = self.scope['url_route']['kwargs']['room_name']
         try:
-            room = await sync_to_async(Room.objects.get)(id=room_id)
+            room = await sync_to_async(Room.objects.get)(name=room_name)
             return user == room.creator
         except Room.DoesNotExist:
             return False
     
-    async def close_room(self, room_id):
+    async def close_room(self, room_name):
          
         try:
-            room = await sync_to_async(Room.objects.get)(id=room_id)
-            # Дополнительная логика закрытия комнаты
+            room = await sync_to_async(Room.objects.get)(name=room_name)
             room.delete()
         except Room.DoesNotExist:
             pass
     
-    async def forward_signal(self, event):
-        signal_data = event['signal_data']
-        await self.send(text_data=json.dumps(signal_data))
-
-    
-    async def handle_signal(self, room_id, data):
-        await self.channel_layer.group_send(self.room_group_name, {
-            'type': 'forward_signal',
-            'signal_data': data,
-        })
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        signal_type = data.get('signal_type')
+        text_data_json = json.loads(text_data)
+        signal = text_data_json['signal_type']
+        sender = text_data_json['sender']
 
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'handleSignal',
+                'signal': signal,
+                'sender': sender
+            }
+        )
+
+
+
+    async def handleSignal(self, event):
         user = self.scope['user']
-        is_admin = await self.check_admin(user)
-        if is_admin:
-            data = json.loads(text_data)
-            signal_type = data.get('signal_type')
+        signal = event['signal']
 
-            if signal_type in ['offer', 'answer', 'ice_candidate']:
-                await self.handle_signal(data)
+        if self.check_admin(user):
+
+            self.send(text_data=json.dump({
+                'signal':signal
+            }))
+
+    async def handleUpdateVideo(self, event):
+        pass
+
+    async def handleChat(self, event):
+        text = event['message']
+        sender = event['sender']
+        
+        self.send(text_data=json.dumps({
+            'text': text,
+            'sender': sender
+        }))
+
+        
+
+
+
+
+        
