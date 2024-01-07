@@ -212,29 +212,59 @@ body {
 
 #nav-wrap {
     padding: 50px 100px 50px 100px;
-    background-color: #333;
+    background-color: #512da8;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    justify-content: center;
-    
 }
 
 #header-wrap {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 #logo {
     padding-left: 100px;
     position: absolute;
     left: 0;
-    
+    color: #fff;
+    font-size: 40px;
 }
 
 #navbar {
     padding-right: 100px;
     position: absolute;
     right: 0;
+}
+
+#navbar button {
+    padding: 20px;
+    font-size: 20px;
+    background-color: #512da8;
+    border: 0px;
+    color: #fff;
+    cursor: pointer;
+}
+
+#introduction-wrap {
+    border-radius: 20px;
+    border: solid 2px #512da8;
+    background-color: #fff;
+    padding: 20px 80px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 25px;
+}
+
+#introduction-wrap button {
+    padding: 20px;
+    font-size: 20px;
+    background-color: #512da8;
+    border: 0px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 20px;
 }

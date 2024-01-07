@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faU, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import ReactPlayer from 'react-player';
 import '../App.css';
 import './Auth.js';
 
@@ -20,7 +21,7 @@ function Home() {
     }
 
     function HandleRoomCreateClick() {
-        navigate('./Room');
+        navigate('./Home');
     }
     
     return (
@@ -28,11 +29,11 @@ function Home() {
             <div id="nav-wrap">
                 <div id="header-wrap">
                     <div id="logo">
-                        здесь картинка
+                        W<span style={{position: 'relative', top: '20px', }}>3</span>G
                     </div>
                     <div id="navbar">
                         <button onClick={HandleHomeClick}>
-                            <FontAwesomeIcon icon={faHome} />
+                            <FontAwesomeIcon icon={faHome} size='50px'/>
                         </button>
                         {localStorage.getItem('token') != null ? (
                             <button onClick={HandleUserClick}>
@@ -47,8 +48,28 @@ function Home() {
                     </div>
                 </div>
             </div>
-            <div>
-                <button onClick={HandleRoomCreateClick}>создать комнату</button>
+            <div id="introduction-wrap">
+                <div style={{fontSize: '60px'}}>
+                    Watch3Gether
+                </div>
+                <div> 
+                    Сайт для совместного
+                </div>
+                <div style={{marginBottom: '25px'}}> 
+                    просмотра видео
+                </div>
+                <div id="room-creation-wrap">
+                    {localStorage.getItem('token') != null ? (
+                        <button onClick={HandleRoomCreateClick}>
+                            Создать комнату
+                        </button>
+                    ) : (
+                        <button onClick={HandleLoginRegClick}>
+                            Зарегистрируйтесь или войдите, чтобы создать комнату
+                        </button>
+                    )
+                    }
+                </div>
             </div>
         </div>
     )
