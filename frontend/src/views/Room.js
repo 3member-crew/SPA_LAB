@@ -117,7 +117,7 @@ const Room = () => {
                 ref={mediaPlayerRef}
                 onPlay={handlePlay}
                 onPause={handlePause}
-                onhandleUrlChange={handleUrlChange}
+                onUrlChange={handleUrlChange}
             />
             <button onClick={setPlay}>play</button>
             <button onClick={setPause}>pause</button>
