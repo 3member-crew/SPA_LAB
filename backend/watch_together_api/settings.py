@@ -67,7 +67,7 @@ ASGI_APPLICATION = 'watch_together_api.asgi.application'
  
 CHANNEL_LAYERS = { 
     'default': { 
-        'BACKEND': 'channels_redis.core.InMemoryChannelLayer', 
+        "BACKEND": "channels.layers.InMemoryChannelLayer", 
         }, 
 } 
  
