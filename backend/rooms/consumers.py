@@ -1,15 +1,46 @@
 import json 
-from channels.generic.websocket import AsyncWebsocketConsumer, AsyncConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Video, Room 
 from asgiref.sync import sync_to_async 
- 
-class RoomConsumer(AsyncConsumer): 
-    async def websocket_connect(self, event):
-        await self.send({"type": "websocket.accept"})
- 
+from rest_framework.authtoken.models import Token
+from channels.db import database_sync_to_async
 
-    async def websocket_disconnect(self, event):
-        pass
+class RoomConsumer(AsyncWebsocketConsumer): 
+    async def connect(self): 
+        self.room_name = self.scope['url_route']['kwargs']['room_name'] 
+        self.room_group_name = f'room_{self.room_name}'
+        self.user = await self.get_user(self.scope['query_string'])
+        print(self.user)
+ 
+ 
+        await self.channel_layer.group_add( 
+                self.room_group_name, 
+                self.channel_name 
+            ) 
+            
+        await self.accept()
+    
+    @database_sync_to_async
+    def get_user(self, query_string):
+        token_key = query_string.decode().split('=')[1]
+        try:
+            token = Token.objects.get(key=token_key)
+            return token.user
+        except Token.DoesNotExist:
+            return None
+ 
+    async def disconnect(self, close_code): 
+ 
+        user = self.scope['user'] 
+        is_admin = await self.check_admin(user) 
+ 
+        await self.channel_layer.group_discard( 
+                self.room_group_name, 
+                self.channel_name 
+            ) 
+         
+        if is_admin: 
+            await self.close_room(self.room_name) 
  
     async def check_admin(self, user): 
         room_name = self.scope['url_route']['kwargs']['room_name'] 
@@ -28,11 +59,19 @@ class RoomConsumer(AsyncConsumer):
             pass 
      
  
-    async def websocket_receive(self, text_data):
-        await self.send({
-            "type": "websocket.send",
-            "text": "Hello from Django socket"
-        })
+    async def receive(self, text_data): 
+        text_data_json = json.loads(text_data) 
+        signal = text_data_json['signal_type'] 
+        sender = text_data_json['sender'] 
+ 
+        await self.channel_layer.group_send( 
+            self.room_group_name, 
+            { 
+                'type': 'handleSignal', 
+                'signal': signal, 
+                'sender': sender 
+            } 
+        ) 
  
  
  
