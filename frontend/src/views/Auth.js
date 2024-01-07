@@ -3,7 +3,6 @@ import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function Auth() {
     const regUsernameRef = useRef(null);
@@ -12,8 +11,6 @@ function Auth() {
 
     const loginUsernameRef = useRef(null);
     const loginPasswordRef = useRef(null);
-
-    const navigate = useNavigate();
     
     function SelectLogin() {
         const container = document.getElementById('container');
@@ -36,8 +33,6 @@ function Auth() {
         const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
         localStorage.setItem('token', respone.data.token);
         localStorage.getItem('token').console.log();
-
-        navigate('/home');
     };
     
     function HandleRegisterClick() {
@@ -50,8 +45,6 @@ function Auth() {
         const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
         localStorage.setItem('token', respone.data.token);
         localStorage.getItem('token').console.log();
-
-        navigate('/home');
     };
 
     return (
