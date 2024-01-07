@@ -1,46 +1,48 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 
-class Room extends Component {
-    state = {
-        isLoggedIn: false,
-        messages: [],
-        value: '',
-        name: '',
-        room: 'test',
-    }
+const Room = () => {
+    // state = {
+    //     isLoggedIn: false,
+    //     messages: [],
+    //     value: '',
+    //     name: '',
+    //     room: 'test',
+    // }
 
-    client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
+    const mediaPlayerRef = useRef();
 
-    pauseVideo = () => {
+    const client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
+
+    const handlePause = () => {
         console.log("pause");
 
-        this.client.send(JSON.stringify({
-            "type": "signal",        
+        client.send(JSON.stringify({
+            "type": "signal",
             "signal": "pause",
         }));
     }
-    
-    playVideo = (currentTime) => {
-        // currentTime: seconds 
-        console.log("play"); 
 
-        this.client.send(JSON.stringify({
+    const handlePlay = (currentTime) => {
+        // currentTime: seconds 
+        console.log("play");
+
+        client.send(JSON.stringify({
             "type": "signal",
             "signal": "play",
         }));
     }
 
-    videoProgress = (progress) => {
+    const handleVideoProgress = (progress) => {
         console.log("progress", progress.playedSeconds);
     }
 
-    urlChange = (newUrl) => {
+    const handleUrlChange = (newUrl) => {
         console.log("url change");
 
-        this.client.send(JSON.stringify({
+        client.send(JSON.stringify({
             type: "signal",
             message: "play",
             currentTime: newUrl,
@@ -48,31 +50,57 @@ class Room extends Component {
         }));
     }
 
-    componentDidMount = () => {
-        console.log("componentDidMount");
+    const setPause = () => {
+        if (mediaPlayerRef.current) {
+            console.log("set pause");
+            mediaPlayerRef.current.pause();
+        }
+    }
 
-        this.client.onopen = () => {
-            console.log('WebSocket Client Connected');
-        };
-        this.client.onmessage = (message) => {
-            const dataFromServer = JSON.parse(message.data);
-            signal = dataFromServer.signal
+    const setPlay = (time = undefined) => {
+        if (mediaPlayerRef.current) {
+            console.log("set play");
+            mediaPlayerRef.current.play(time);
+        }
+    }
 
-            if (signal == 'play') {
+    const setProgress = (progress) => {
+        if (mediaPlayerRef.current) {
+            console.log("set progress");
+            mediaPlayerRef.current.setProgress(progress);
+        }
+    }
 
-            }
-            if (signal == 'pause') {
-
-            }
-            if (signal == 'url_change') {
-                
-            }
-
-            }
-        };
+    const setUrl = (newUrl) => {
+        if (mediaPlayerRef.current) {
+            console.log("set url");
+            mediaPlayerRef.current.setUrl(newUrl);
+        }
+    }
 
 
-    requireAuth(nextState, replace, next) {
+    client.onopen = () => {
+        console.log('WebSocket Client Connected');
+    };
+
+    client.onmessage = (message) => {
+        const dataFromServer = JSON.parse(message.data);
+        const signal = dataFromServer.signal
+
+        if (signal === 'play') {
+            const time = undefined;
+            setPlay(time);
+        }
+        if (signal === 'pause') {
+            setPause();
+        }
+        if (signal === 'url_change') {
+            const newUrl = 'new-url';
+            setUrl(newUrl);
+        }
+    }
+
+    const requireAuth = (nextState, replace, next) => {
         if (!localStorage.getItem('token')) {
             replace({
                 pathname: "/login",
@@ -83,17 +111,18 @@ class Room extends Component {
         next();
     }
 
-    render() {
-        return (
-            <div>
-                <MediaPlayer 
-                    onPlay={this.playVideo}
-                    onPause={this.pauseVideo}
-                    onUrlChange={this.urlChange}
-                />
-            </div>
-        )
-    }
+    return (
+        <div>
+            <MediaPlayer
+                ref={mediaPlayerRef}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onhandleUrlChange={handleUrlChange}
+            />
+            <button onClick={setPlay}>play</button>
+            <button onClick={setPause}>pause</button>
+        </div>
+    )
 }
 
 export default Room;

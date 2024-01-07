@@ -1,55 +1,96 @@
-import React, { useState, useRef } from 'react';
+import React, { Component } from 'react';
 import ReactPlayer from 'react-player/lazy';
 
 const defaultUrl = 'https://youtu.be/0tOXxuLcaog';
 
-function MediaPlayer({ onPlay, onPause, onProgress, onUrlChange }) {
-    const [url, setUrl] = useState(defaultUrl);
-    const playerRef = useRef(null);
-    const [currentTime, setCurrentTime] = useState(0);
+class MediaPlayer extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            url: defaultUrl,
+            currentTime: 0,
+            isPlaying: false,
+            played: 0
+        };
+        this.playerRef = React.createRef();
+    }
 
-    const HandleUrlChange = (event) => {
+    handleUrlChange = (event) => {
         const newUrl = event.target.value;
-        setUrl(newUrl);
+        this.setState({ url: newUrl });
 
-        if (onUrlChange) {
-            onUrlChange(newUrl);
+        if (this.props.onUrlChange) {
+            this.props.onUrlChange(newUrl);
         }
     };
 
-    const handlePlay = () => {
-        if (onPlay) {
-            const currentTime = playerRef.current.getCurrentTime();
-            onPlay(currentTime);
+    handlePlay = () => {
+        if (this.props.onPlay) {
+            const currentTime = this.playerRef.current.getCurrentTime();
+            this.props.onPlay(currentTime);
         }
     };
 
-    const handlePause = () => {
-        if (onPause) {
-            onPause();
+    handlePause = () => {
+        if (this.props.onPause) {
+            this.props.onPause();
         }
     };
 
-    const handleProgress = (progress) => {
-        if (onProgress) {
-            // setCurrentTime(progress.playedSeconds);
-            onProgress(progress);
+    handleProgress = (progress) => {
+        this.setState({ played: progress.playedSeconds });
+
+        if (this.props.onProgress) {
+            this.props.onProgress(progress);
         }
     };
 
-    return (
-        <>
-            <input type="text" value={url} onChange={HandleUrlChange} />
-            <ReactPlayer
-                ref={playerRef}
-                url={url}
-                controls={true}
-                onPlay={handlePlay}
-                onPause={handlePause}
-                onProgress={handleProgress}
-            />
-        </>
-    )
+    pause = () => {
+        this.setState({ isPlaying: false });
+    };
+
+    play = (time) => {
+        if (time) {
+            this.setState({ currentTime: time });
+        }
+        this.setState({ isPlaying: true });
+    };
+
+    setProgress = (progress) => {
+        if (progress) {
+            this.setState({ played: progress.playedSeconds });
+            this.playerRef.current.seekTo(progress.playedSeconds);
+        }
+    }
+
+    setUrl = (newUrl) => {
+        if (newUrl) {
+            this.setState({ url: newUrl });
+        }
+    };
+
+    render() {
+        const { url, isPlaying } = this.state;
+
+        return (
+            <>
+                <input type="text" value={url} onChange={this.handleUrlChange} />
+                <ReactPlayer
+                    ref={this.playerRef}
+                    url={url}
+                    onReady={() => {
+                        //   videoRef.current.seekTo(room.played);
+                    }}
+                    onStart={this.handlePlay}
+                    onPlay={this.handlePlay}
+                    onPause={this.handlePause}
+                    playing={isPlaying}
+                    controls={true}
+                    onProgress={this.handleProgress}
+                />
+            </>
+        );
+    }
 }
 
 export default MediaPlayer;
