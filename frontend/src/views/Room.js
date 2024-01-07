@@ -14,34 +14,44 @@ class Room extends Component {
 
     client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
 
-    pauseVideo() {
+    pauseVideo = () => {
         console.log("pause");
+
+        this.client.send(JSON.stringify({
+            type: "signal",
+            message: "play",
+            token: localStorage.getItem('token'),
+        }));
     }
     
-    playVideo(currentTime) {
+    playVideo = (currentTime) => {
         // currentTime: seconds 
         console.log("play"); 
+
+        this.client.send(JSON.stringify({
+            type: "signal",
+            message: "play",
+            currentTime: currentTime,
+            token: localStorage.getItem('token'),
+        }));
     }
 
-    videoProgress(progress) {
+    videoProgress = (progress) => {
         console.log("progress", progress.playedSeconds);
     }
 
-    urlChange(newUrl) {
+    urlChange = (newUrl) => {
         console.log("url change");
-    }
 
-    onButtonClicked = (e) => {
         this.client.send(JSON.stringify({
             type: "signal",
-            message: this.state.value,
-            name: this.state.name
+            message: "play",
+            currentTime: newUrl,
+            token: localStorage.getItem('token'),
         }));
-        this.state.value = ''
-        e.preventDefault();
     }
 
-    componentDidMount() {
+    componentDidMount = () => {
         console.log("componentDidMount");
 
         this.client.onopen = () => {
