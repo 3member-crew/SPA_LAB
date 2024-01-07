@@ -27,6 +27,10 @@ class Room extends Component {
         console.log("progress", progress.playedSeconds);
     }
 
+    urlChange(newUrl) {
+        console.log("url change");
+    }
+
     onButtonClicked = (e) => {
         this.client.send(JSON.stringify({
             type: "signal",
@@ -79,6 +83,7 @@ class Room extends Component {
                 <MediaPlayer 
                     onPlay={this.playVideo}
                     onPause={this.pauseVideo}
+                    onUrlChange={this.urlChange}
                 />
             </div>
         )

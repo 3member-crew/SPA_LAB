@@ -1,13 +1,20 @@
 import React, { useState, useRef } from 'react';
 import ReactPlayer from 'react-player/lazy';
 
-function MediaPlayer({ onPlay, onPause, onSeek, onProgress }) {
-    const [url, setUrl] = useState('https://youtu.be/E5gvllH2fag');
+const defaultUrl = 'https://youtu.be/0tOXxuLcaog';
+
+function MediaPlayer({ onPlay, onPause, onProgress, onUrlChange }) {
+    const [url, setUrl] = useState(defaultUrl);
     const playerRef = useRef(null);
     const [currentTime, setCurrentTime] = useState(0);
 
     const HandleUrlChange = (event) => {
-        setUrl(event.target.value);
+        const newUrl = event.target.value;
+        setUrl(newUrl);
+
+        if (onUrlChange) {
+            onUrlChange(newUrl);
+        }
     };
 
     const handlePlay = () => {
