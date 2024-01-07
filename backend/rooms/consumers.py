@@ -87,3 +87,4 @@ class RoomConsumer(AsyncWebsocketConsumer):
             'text': text, 
             'sender': sender 
         }))
+

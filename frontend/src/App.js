@@ -4,6 +4,7 @@ import Home from './views/Home';
 import Layout from './'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+
 function App() {
   return (
     <BrowserRouter>

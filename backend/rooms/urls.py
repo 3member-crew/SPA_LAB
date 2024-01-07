@@ -15,5 +15,4 @@ urlpatterns = [
     path('rooms/videos/', views.VideoView.as_view({'get': 'get_all_video'})), 
     path('rooms/videos/get/', views.VideoView.as_view({'get': 'get_video'})), 
     path('rooms/videos/add/', views.VideoView.as_view({'post': 'add_video'})), 
- 
 ]
