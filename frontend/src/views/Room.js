@@ -18,12 +18,13 @@ class Room extends Component {
         console.log("pause");
     }
     
-    playVideo() {
-        console.log("play");
+    playVideo(currentTime) {
+        // currentTime: seconds 
+        console.log("play"); 
     }
 
-    changeVideoTime() {
-        console.log("seek");
+    videoProgress(progress) {
+        console.log("progress", progress.playedSeconds);
     }
 
     onButtonClicked = (e) => {
@@ -78,7 +79,6 @@ class Room extends Component {
                 <MediaPlayer 
                     onPlay={this.playVideo}
                     onPause={this.pauseVideo}
-                    onSeek={this.changeVideoTime}
                 />
             </div>
         )

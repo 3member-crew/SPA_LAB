@@ -1,42 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ReactPlayer from 'react-player/lazy';
 
-function MediaPlayer({ onPlay, onPause, onSeek }) {
+function MediaPlayer({ onPlay, onPause, onSeek, onProgress }) {
     const [url, setUrl] = useState('https://youtu.be/E5gvllH2fag');
+    const playerRef = useRef(null);
+    const [currentTime, setCurrentTime] = useState(0);
 
     const HandleUrlChange = (event) => {
         setUrl(event.target.value);
     };
 
     const handlePlay = () => {
-        console.log("play - inner");
         if (onPlay) {
-            onPlay();
+            const currentTime = playerRef.current.getCurrentTime();
+            onPlay(currentTime);
         }
     };
-    
+
     const handlePause = () => {
-        console.log("pause - inner");
         if (onPause) {
             onPause();
         }
     };
-    
-    const handleSeek = () => {
-        console.log("seek - inner");
-        if (onSeek) {
-            onSeek();
+
+    const handleProgress = (progress) => {
+        if (onProgress) {
+            // setCurrentTime(progress.playedSeconds);
+            onProgress(progress);
         }
-    }
+    };
 
     return (
         <>
             <input type="text" value={url} onChange={HandleUrlChange} />
             <ReactPlayer
+                ref={playerRef}
                 url={url}
+                controls={true}
                 onPlay={handlePlay}
                 onPause={handlePause}
-                onSeek={handleSeek}
+                onProgress={handleProgress}
             />
         </>
     )
