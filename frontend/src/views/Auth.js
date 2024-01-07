@@ -24,27 +24,25 @@ function Auth() {
         container.classList.add("active");
     };
     
-    function HandleLoginClick() {
-        const respone = axios.post('http://127.0.0.1:8000/api/auth/login/', {
+    async function HandleLoginClick() {
+        const respone = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
     
-        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
-        localStorage.setItem('token', respone.data.token);
-        localStorage.getItem('token').console.log();
+        const token = respone.data.token;
+        localStorage.setItem('token', token);
     };
     
-    function HandleRegisterClick() {
-        const respone = axios.post('http://127.0.0.1:8000/api/auth/register/', {
+    async function HandleRegisterClick() {
+        const respone = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,
         })
     
-        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
-        localStorage.setItem('token', respone.data.token);
-        localStorage.getItem('token').console.log();
+        const token = respone.data.token;
+        localStorage.setItem('token', token);
     };
 
     return (
