@@ -8,7 +8,7 @@ from channels.db import database_sync_to_async
 class RoomConsumer(AsyncWebsocketConsumer): 
     async def connect(self): 
         self.room_name = self.scope['url_route']['kwargs']['room_name'] 
-        self.room_group_name = f'room_{self.room_name}'
+        self.room_group_name = self.room_name
         self.user = await self.get_user(self.scope['query_string'])
         print(self.user)
  
@@ -65,7 +65,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         signal = text_data_json['signal']
 
         user = await self.get_user(self.scope['query_string'])
-        is_admin =  self.check_admin(user)
+        #is_admin =  self.check_admin(user)
         print(text_data_json)
         is_admin = True
     
@@ -73,12 +73,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if signal == 'play':
 
             #current_time = text_data_json['current_time']
-            await self.send(text_data=json.dumps({ 
-                'signal':signal 
-            })
-            )
 
-            self.channel_layer.group_send( 
+            await self.channel_layer.group_send( 
                 self.room_group_name,
                 { 
                     'type': 'handlePlay', 
@@ -89,7 +85,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if signal == 'url_change':
             url = text_data_json['new_url']
         
-            self.channel_layer.group_send( 
+            await self.channel_layer.group_send( 
                 self.room_group_name, 
                 { 
                     'type': 'handleURL', 
@@ -99,7 +95,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 } 
             )
         if signal == 'pause':
-            self.channel_layer.group_send( 
+            await self.channel_layer.group_send( 
                 self.room_group_name, 
                 { 
                     'type': 'handlePause', 
@@ -109,7 +105,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
     
  
-    def handlePlay(self, event):
+    async def handlePlay(self, event):
         print('check') 
         signal = event['signal']
         is_admin = event['is_admin']
@@ -117,31 +113,31 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         if is_admin:
             print('play')
-            self.send(text_data=json.dump({ 
-                'signal':signal,
+            await self.send(text_data=json.dumps({ 
+                'signal': signal,
                 #'current_time': current_time
             })
             )
     
-    def handleURL(self, event):
+    async def handleURL(self, event):
         signal = event['signal']
         is_admin = event['is_admin']
         url = event['url']
 
         if is_admin:
-            self.send(text_data=json.dump({ 
+            self.send(text_data=json.dumps({ 
                 'signal': signal,
                 'new_url': url
             })
             )
     
-    def handlePause(self, event):
+    async def handlePause(self, event):
         signal = event['signal']
         is_admin = event['is_admin']
 
         if is_admin:
             print('pause')
-            self.send(text_data=json.dump({ 
+            await self.send(text_data=json.dumps({ 
                 'signal': signal,
             }))
     
@@ -150,7 +146,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         text = event['message'] 
         sender = event['sender'] 
          
-        self.send(text_data=json.dumps({ 
+        await self.send(text_data=json.dumpss({ 
             'text': text, 
             'sender': sender 
         }))
