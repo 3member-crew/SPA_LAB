@@ -1,37 +1,15 @@
 import json 
-from channels.generic.websocket import AsyncWebsocketConsumer 
+from channels.generic.websocket import AsyncWebsocketConsumer, AsyncConsumer
 from .models import Video, Room 
 from asgiref.sync import sync_to_async 
  
-class RoomConsumer(AsyncWebsocketConsumer): 
-    async def connect(self): 
-        self.room_name = self.scope['url_route']['kwargs']['room_name'] 
-        self.room_group_name = f'room_{self.room.name}' 
-        user =self.scope['user'] 
+class RoomConsumer(AsyncConsumer): 
+    async def websocket_connect(self, event):
+        await self.send({"type": "websocket.accept"})
  
-        # Присоединение к комнате 
-        if user.is_authenticated: 
-            await self.channel_layer.group_add( 
-                    self.room_group_name, 
-                    self.channel_name 
-                ) 
-         
-            await self.accept() 
-        else: 
-            await self.close() 
- 
-    async def disconnect(self, close_code): 
- 
-        user = self.scope['user'] 
-        is_admin = await self.check_admin(user) 
- 
-        await self.channel_layer.group_discard( 
-                self.room_group_name, 
-                self.channel_name 
-            ) 
-         
-        if is_admin: 
-            await self.close_room(self.room_name) 
+
+    async def websocket_disconnect(self, event):
+        pass
  
     async def check_admin(self, user): 
         room_name = self.scope['url_route']['kwargs']['room_name'] 
@@ -50,19 +28,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
             pass 
      
  
-    async def receive(self, text_data): 
-        text_data_json = json.loads(text_data) 
-        signal = text_data_json['signal_type'] 
-        sender = text_data_json['sender'] 
- 
-        await self.channel_layer.group_send( 
-            self.room_group_name, 
-            { 
-                'type': 'handleSignal', 
-                'signal': signal, 
-                'sender': sender 
-            } 
-        ) 
+    async def websocket_receive(self, text_data):
+        await self.send({
+            "type": "websocket.send",
+            "text": "Hello from Django socket"
+        })
  
  
  

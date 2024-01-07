@@ -12,7 +12,7 @@ class Room extends Component {
         room: 'test',
     }
 
-    client = new W3CWebSocket('ws://localhost:8000/ws/room/' + this.state.room + '/');
+    client = new W3CWebSocket('ws://127.0.0.1:8000/ws/room/');
 
     pauseVideo() {
         console.log("pause");
