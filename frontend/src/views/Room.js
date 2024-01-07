@@ -18,9 +18,8 @@ class Room extends Component {
         console.log("pause");
 
         this.client.send(JSON.stringify({
-            type: "signal",
-            message: "play",
-            token: localStorage.getItem('token'),
+            "type": "signal",        
+            "signal": "pause",
         }));
     }
     
@@ -29,10 +28,8 @@ class Room extends Component {
         console.log("play"); 
 
         this.client.send(JSON.stringify({
-            type: "signal",
-            message: "play",
-            currentTime: currentTime,
-            token: localStorage.getItem('token'),
+            "type": "signal",
+            "signal": "play",
         }));
     }
 
@@ -59,21 +56,20 @@ class Room extends Component {
         };
         this.client.onmessage = (message) => {
             const dataFromServer = JSON.parse(message.data);
-            console.log('got reply! ', dataFromServer.type);
+            signal = dataFromServer.signal
 
-            if (dataFromServer) {
-                this.setState((state) =>
-                ({
-                    messages: [...state.messages,
-                    {
-                        msg: dataFromServer.message,
-                        name: dataFromServer.name,
-                    }]
-                })
-                );
+            if (signal == 'play') {
+
+            }
+            if (signal == 'pause') {
+
+            }
+            if (signal == 'url_change') {
+                
+            }
+
             }
         };
-    }
 
 
     requireAuth(nextState, replace, next) {
