@@ -43,10 +43,10 @@ const Room = () => {
         console.log("url change");
 
         client.send(JSON.stringify({
-            type: "signal",
-            message: "play",
-            currentTime: newUrl,
-            token: localStorage.getItem('token'),
+            "type": "signal",
+            "message": "play",
+            "currentTime": newUrl,
+            "token": localStorage.getItem('token'),
         }));
     }
 
