@@ -41,10 +41,9 @@ class Room extends Component {
         console.log("url change");
 
         this.client.send(JSON.stringify({
-            type: "signal",
-            message: "play",
-            currentTime: newUrl,
-            token: localStorage.getItem('token'),
+            "type": "signal",
+            "signal": "play",
+            "newURL": newUrl
         }));
     }
 
@@ -56,7 +55,8 @@ class Room extends Component {
         };
         this.client.onmessage = (message) => {
             const dataFromServer = JSON.parse(message.data);
-            signal = dataFromServer.signal
+            const signal = dataFromServer.signal;
+            console.log('signal here' + signal)
 
             if (signal == 'play') {
 
@@ -65,7 +65,7 @@ class Room extends Component {
 
             }
             if (signal == 'url_change') {
-                
+
             }
 
             }
