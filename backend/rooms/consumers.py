@@ -60,33 +60,82 @@ class RoomConsumer(AsyncWebsocketConsumer):
      
  
     async def receive(self, text_data): 
-        text_data_json = json.loads(text_data) 
-        signal = text_data_json['signal_type'] 
-        sender = text_data_json['sender'] 
+        text_data_json = json.loads(text_data)
+
+        signal = text_data_json['signal_type']
+
+        user = await self.get_user(self.scope['query_string'])
+        is_admin =  self.check_admin(user)
+    
+
+        if signal == 'play':
+            current_time = text_data_json['current_time']
+        
+            await self.channel_layer.group_send( 
+                self.room_group_name, 
+                { 
+                    'type': 'handlePlay', 
+                    'signal': signal,
+                    'is_admin': is_admin,
+                    'current_time': current_time,
+                } 
+            )
+        if signal == 'url_change':
+            url = text_data_json['new_url']
+        
+            await self.channel_layer.group_send( 
+                self.room_group_name, 
+                { 
+                    'type': 'handleURL', 
+                    'signal': signal,
+                    'is_admin': is_admin,
+                    'url': url,
+                } 
+            )
+        if signal == 'pause':
+            await self.channel_layer.group_send( 
+                self.room_group_name, 
+                { 
+                    'type': 'handlePause', 
+                    'signal': signal,
+                    'is_admin': is_admin,
+                } 
+            )
+    
  
-        await self.channel_layer.group_send( 
-            self.room_group_name, 
-            { 
-                'type': 'handleSignal', 
-                'signal': signal, 
-                'sender': sender 
-            } 
-        ) 
- 
- 
- 
-    async def handleSignal(self, event): 
-        user = self.scope['user'] 
-        signal = event['signal'] 
- 
-        if self.check_admin(user): 
- 
+    async def handlePlay(self, event): 
+        signal = event['signal']
+        is_admin = event['is_admin']
+        current_time = event['current_time']
+
+        if is_admin:
             self.send(text_data=json.dump({ 
-                'signal':signal 
-            })) 
- 
-    async def handleUpdateVideo(self, event): 
-        pass 
+                'signal':signal,
+                'current_time': current_time
+            })
+            )
+    
+    async def handleURL(self, event):
+        signal = event['signal']
+        is_admin = event['is_admin']
+        url = event['url']
+
+        if is_admin:
+            self.send(text_data=json.dump({ 
+                'signal': signal,
+                'new_url': url
+            })
+            )
+    
+    async def handlePause(self, event):
+        signal = event['signal']
+        is_admin = event['is_admin']
+
+        if is_admin:
+            self.send(text_data=json.dump({ 
+                'signal': signal,
+            }))
+    
  
     async def handleChat(self, event): 
         text = event['message'] 
