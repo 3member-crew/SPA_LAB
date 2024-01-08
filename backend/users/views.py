@@ -18,7 +18,6 @@ def register(request):
         token = create_token(user)
 
         response = Response()
-        response.status_text = status.HTTP_200_OK
         response.data = ({
             'token': token.key,
         })
@@ -30,6 +29,7 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
+    print(request.data)
     username = request.data['username']
     password = request.data['password']
 

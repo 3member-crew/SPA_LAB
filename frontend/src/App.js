@@ -87,7 +87,7 @@ function App() {
                     <Route index element={<Home />} />
                     <Route exact path="/auth" element={<Auth />} />
                     <Route exact path="/home" element={<JoinRoom />} />
-                    <Route exact path="/room" element={<Room />} />
+                    <Route exact path="/room/:room" element={<Room />} />
                 </Routes>
             </BrowserRouter>
         </>

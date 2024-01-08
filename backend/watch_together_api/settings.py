@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'rooms', 
     'corsheaders', 
     'rest_framework.authtoken', 
-    'channels', 
+    'channels',
 ] 
  
 MIDDLEWARE = [ 

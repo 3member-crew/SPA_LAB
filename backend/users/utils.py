@@ -7,6 +7,7 @@ def create_token(user):
 
 def get_token(user):
     token, created = Token.objects.get_or_create(user=user)
-    if token:
+    if (token):
         return token
-    return created
+    else:
+        return created

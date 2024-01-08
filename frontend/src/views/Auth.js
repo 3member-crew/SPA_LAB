@@ -29,7 +29,7 @@ function Auth() {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
-    
+        
         const token = respone.data.token;
         localStorage.setItem('token', token);
     };
@@ -40,7 +40,8 @@ function Auth() {
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,
         })
-    
+        
+        console.log(respone);
         const token = respone.data.token;
         localStorage.setItem('token', token);
     };
@@ -61,7 +62,7 @@ function Auth() {
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="text" placeholder="Имя" ref={regUsernameRef}></input>
+                    <input type="email" placeholder="Имя" ref={regUsernameRef}></input>
                     <input type="email" placeholder="Email" ref={regEmailRef}></input>
                     <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
                     <button onClick={HandleRegisterClick}>Создать</button>
@@ -81,7 +82,7 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="username" placeholder="Логин" ref={loginUsernameRef}></input>
+                    <input type="email" placeholder="Логин" ref={loginUsernameRef}></input>
                     <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
                     <button onClick={HandleLoginClick}>Войти</button>

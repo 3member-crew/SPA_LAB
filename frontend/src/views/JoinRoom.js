@@ -28,7 +28,6 @@ function JoinRoom() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
 
-        navigate('/room');
     };
     
     function HandleCreateClick() {
@@ -65,15 +64,13 @@ function JoinRoom() {
             <div className="toggle-container">
                 <div className="toggle">
                     <div className="toggle-panel toggle-left">
-                        <h1>_ ___________</h1>
-                        <p>_______ ____ __________ ______, _____ ____________ ______ ______ _________ _____</p>
+                        <h1>А также можно подключиться к комнате</h1>
                         <button className="hidden" id="login" onClick={SelectConnect}>
                             Войти
                         </button>
                     </div>
                     <div className="toggle-panel toggle-right">
-                        <h1>______, ____</h1>
-                        <p>_________________, _____ ____ ___________ ______</p>
+                        <h1>А также можно создать комнату</h1>
                         <button className="hidden" id="register" onClick={SelectCreate}>
                             Создать
                         </button>
