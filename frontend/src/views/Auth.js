@@ -81,7 +81,7 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="email" placeholder="Email" ref={loginUsernameRef}></input>
+                    <input type="username" placeholder="Логин" ref={loginUsernameRef}></input>
                     <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
                     <button onClick={HandleLoginClick}>Войти</button>
