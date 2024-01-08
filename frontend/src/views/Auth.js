@@ -7,13 +7,17 @@ function Auth() {
     const registerBtn = document.getElementById('register');
     const loginBtn = document.getElementById('login');
 
-    registerBtn.addEventListener('click', () => {
-        container.classList.add("active");
-    });
+    if (registerBtn) {
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+        });
+    }
 
-    loginBtn.addEventListener('click', () => {
-        container.classList.remove("active");
-    });
+    if (registerBtn) {
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+        });
+    }
 
     return(
         <div class="container" id="container">
