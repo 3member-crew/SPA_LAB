@@ -14,7 +14,7 @@ jobs:
                 node-version: '20.x'
             - name: Install deps
               working-directory: ./frontend
-              run: npm ci
+              run: npm install
             - name: ESLint
               working-directory: ./frontend
               run: npm run lint
