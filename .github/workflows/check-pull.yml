@@ -16,7 +16,7 @@ jobs:
               run: |
                 cd ./frontend
                 ls
-                npm ci
+                npm@5 install
             - name: ESLint
               working-directory: ./frontend
               run: npm run lint
