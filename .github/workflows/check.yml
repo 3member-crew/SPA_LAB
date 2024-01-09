@@ -23,7 +23,10 @@ jobs:
 
           - name: Install deps
             working-directory: ./frontend
-            run: npm install
+            run: |
+              rm -rf node_modules
+              rm -f package-lock.json
+              npm i
 
           - name: ESLint
             working-directory: ./frontend
