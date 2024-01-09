@@ -4,25 +4,25 @@ on:
         branches: dev
 jobs:
     lint:
-      runs-on: ubuntu-latest
-      steps:
-          - name: Checkout
-            uses: actions/checkout@v3
-          - name: Change Directory
-            run: cd .\frontend\
-          - name: Install deps
-            run: npm ci
-          - name: ESLint
-            run: npm run lint
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Install deps
+              working-directory: ./frontend
+              run: npm ci
+            - name: ESLint
+              working-directory: ./frontend
+              run: npm run lint
     test:
-      needs: [lint]
-      runs-on: ubuntu-latest
-      steps:
-          - name: Checkout
-            uses: actions/checkout@v3
-          - name: Change Directory
-            run: cd .\frontend\
-          - name: Install deps
-            run: npm ci
-          - name: Test
-            run: npm run test
+        needs: [lint]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Install deps
+              working-directory: ./frontend
+              run: npm ci
+            - name: Test
+              working-directory: ./frontend
+              run: npm run test
