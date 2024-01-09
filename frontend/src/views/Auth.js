@@ -3,8 +3,11 @@ import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Auth() {
+    const navigate = useNavigate(); 
+
     const regUsernameRef = useRef(null);
     const regEmailRef = useRef(null);
     const regPasswordRef = useRef(null);
@@ -24,7 +27,7 @@ function Auth() {
         container.classList.add("active");
     };
     
-    async function HandleLoginClick() {
+    async function HandleLoginClick() { 
         const respone = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
@@ -32,6 +35,8 @@ function Auth() {
         
         const token = respone.data.token;
         localStorage.setItem('token', token);
+
+        navigate('../');
     };
     
     async function HandleRegisterClick() {
@@ -41,9 +46,9 @@ function Auth() {
             password: regPasswordRef.current.value,
         })
         
-        console.log(respone);
         const token = respone.data.token;
         localStorage.setItem('token', token);
+        navigate('../');
     };
 
     return (

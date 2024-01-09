@@ -3,6 +3,7 @@ import Auth from './views/Auth';
 import Home from './views/Home';
 import JoinRoom from './views/JoinRoom';
 import Room from './views/Room';
+import Account from './views/Account';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import React, { Component } from 'react';
 
@@ -88,6 +89,7 @@ function App() {
                     <Route exact path="/auth" element={<Auth />} />
                     <Route exact path="/home" element={<JoinRoom />} />
                     <Route exact path="/room/:room" element={<Room />} />
+                    <Route exact path="/account" element={<Account />} />
                 </Routes>
             </BrowserRouter>
         </>
