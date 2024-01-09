@@ -1,97 +1,36 @@
 import './App.css';
 import Auth from './views/Auth';
 import Home from './views/Home';
+
 import JoinRoom from './views/JoinRoom';
 import Room from './views/Room';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import React, { Component } from 'react';
 
-
-
-// class App extends Component {
-//     state = {
-//         isLoggedIn: false,
-//         messages: [],
-//         value: '',
-//         name: '',
-//         room: 'test',
-//     }
-
-//     client = new W3CWebSocket('ws://django-chat-app.herokuapp.com/ws/chat/' + this.state.room + '/');
-
-//     componentDidMount() {
-//         this.client.onopen = () => {
-//             console.log('WebSocket Client Connected');
-//         };
-//         this.client.onmessage = (message) => {
-//             const dataFromServer = JSON.parse(message.data);
-//             console.log('got reply! ', dataFromServer.type);
-//             if (dataFromServer) {
-//                 this.setState((state) =>
-//                 ({
-//                     messages: [...state.messages,
-//                     {
-//                         msg: dataFromServer.message,
-//                         name: dataFromServer.name,
-//                     }]
-//                 })
-//                 );
-//             }
-//         };
-//     }
-
-
-//     requireAuth(nextState, replace, next) {
-//         if (!localStorage.getItem('token')) {
-//             replace({
-//                 pathname: "/login",
-//                 state: { nextPathname: nextState.location.pathname }
-//             })
-//         }
-
-//         next();
-//     }
-
-//     render() {
-//         return (
-//             <>
-//                 <BrowserRouter>
-//                     <Routes>
-//                         <Route index element={<Home />} />
-//                         <Route exact path="/auth" element={<Auth />} />
-//                         <Route exact path="/home" element={<JoinRoom />} />
-//                         <Route exact path="/room" element={<Room />} />
-//                     </Routes>
-//                 </BrowserRouter>
-//             </>
-//         )
-//     }
-// }
 
 function App() {
-    function requireAuth(nextState, replace, next) {
-        if (!localStorage.getItem('token')) {
-            replace({
-                pathname: "/login",
-                state: { nextPathname: nextState.location.pathname }
-            })
-        }
-
-        next();
+  function requireAuth(nextState, replace, next) {
+    if (!localStorage.getItem('token')) {
+      replace({
+        pathname: "/login",
+        state: {nextPathname: nextState.location.pathname}
+      })
     }
 
-    return (
-        <>
-            <BrowserRouter>
-                <Routes>
-                    <Route index element={<Home />} />
-                    <Route exact path="/auth" element={<Auth />} />
-                    <Route exact path="/home" element={<JoinRoom />} />
-                    <Route exact path="/room" element={<Room />} />
-                </Routes>
-            </BrowserRouter>
-        </>
-    );
+    next();
+  }
+
+  return (
+      <>
+          <BrowserRouter>
+              <Routes>
+                  <Route index element={<Home />} />
+                  <Route exact path="/auth" element={<Auth />} />
+                  <Route exact path="/home" element={<JoinRoom />} />
+                  <Route exact path="/room" element={<Room />} />
+              </Routes> 
+          </BrowserRouter>
+      </>
+  );
 }
 
 export default App;
