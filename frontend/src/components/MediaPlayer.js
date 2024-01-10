@@ -51,6 +51,7 @@ class MediaPlayer extends Component {
 
     play = (time) => {
         if (time) {
+            //this.playerRef.current.seekTo(time);
             this.setState({ currentTime: time });
         }
         this.setState({ isPlaying: true });

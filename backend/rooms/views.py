@@ -22,20 +22,26 @@ class RoomView(ViewSet):
     def get_room(self, request):
 
         room_name = request.query_params.get('name')
-        password = request.query_params.get('password')
 
-        room = Room.objects.get(name=room_name) 
-        if room.password == password:
-            serializer = RoomSerializer(room) 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'details' : 'bad password'}, status=status.HTTP_400_BAD_REQUEST) 
+
+        if Room.objects.filter(name=room_name).exists() == False:
+            return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        room = Room.objects.get(name=room_name)
+        serializer = RoomSerializer(room) 
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
      
     def create_room(self, request):
         print(request.data)
         serializer = RoomSerializer(data=request.data, context={'request': request}) 
-        serializer.is_valid(raise_exception=True) 
-        serializer.save() 
-        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+
+        if serializer.is_valid():
+            room = serializer.save()
+            token = room.access_token
+            return Response({'room': serializer.data, 'room_token': token}, status=status.HTTP_201_CREATED)
+        else:
+
+            return Response({'error' : serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
      
     def get_all(self, request):
         rooms = Room.objects.all() 
@@ -48,9 +54,9 @@ class RoomView(ViewSet):
         try: 
             room = Room.objects.get(name=room_id) 
             room.delete() 
-            return Response({'message': 'Room deleted'}, status=200) 
+            return Response({'error': 'Room deleted'}, status=200) 
         except Room.DoesNotExist: 
-            return Response({'message': 'Room not found'}, status=404)
+            return Response({'error': 'Room not found'}, status=404)
         
 
 class VideoView(ViewSet): 
@@ -65,7 +71,7 @@ class VideoView(ViewSet):
             serializer = VideoSerializer(video) 
             return Response(serializer.data) 
         else: 
-            return Response({'message': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
+            return Response({'error': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
  
     def get_all_video(self, request): 
         room_id = request.data.get('room_id') 
@@ -87,33 +93,46 @@ class VideoView(ViewSet):
 class MemberView(ViewSet): 
     serializer_class = MembersSerializer 
  
-    def get_member(self, request): 
-        room_id = request.query_params.get('room_id') 
+    def get_members(self, request): 
+        room_name = request.query_params.get('name') 
  
-        room = Room.objects.get(id=room_id) 
+        room = Room.objects.get(name=room_name) 
         members = room.members.all() 
         serializer = MembersSerializer(members, many=True) 
         return Response(serializer.data) 
  
-    def add_member(self, request): 
-        room_id = request.query_params.get('room_id') 
- 
-        room = Room.objects.get(id=room_id) 
+
+    def join_room(self, request): 
+        
+        room_name = request.data.get('name')
+        password = request.data.get('password')
+
+        if Room.objects.filter(name=room_name).exists() == False:
+            return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        room = Room.objects.get(name=room_name)
         user = request.user 
-        member, created = Member.objects.get_or_create(room=room, user=user) 
-        if created: 
-            return Response({'message': 'Пользователь успешно добавлен в комнату'}, status=status.HTTP_201_CREATED) 
-        else: 
-            return Response({'message': 'Пользователь уже присутствует в комнате'}, status=status.HTTP_400_BAD_REQUEST) 
+
+        member, created = Member.objects.get_or_create(room=room, user=user)
+        if password:
+            if created:
+                token = room.access_token 
+                return Response({'room_token': token}, status=status.HTTP_201_CREATED) 
+            else: 
+                return Response({'error': 'Пользователь уже присутствует в комнате'}, status=status.HTTP_400_BAD_REQUEST)
+             
+        return Response({'error': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def remove_member(self, request):
+
+        room_name = request.query_params.get('name') 
+        #user_id = request.query_params.get('user_id') 
+
  
-    def remove_member(self, request): 
-        room_id = request.query_params.get('room_id') 
-        user_id = request.query_params.get('user_id') 
- 
- 
-        room = Room.objects.get(id=room_id) 
-        user = User.objects.get(id=user_id) 
-        #user = request.user 
+        room = Room.objects.get(name=room_name)  
+        #user = User.objects.get(id=user_id) 
+        user = request.user 
  
         member = Member.objects.filter(room=room, user=user) 
         if member.exists(): 
@@ -126,11 +145,11 @@ class MemberView(ViewSet):
         else: 
             return Response({'message': 'Пользователь не найден в комнате'}, status=status.HTTP_404_NOT_FOUND) 
  
-    def remove_all_members(self, request): 
-        room_id = request.query_params.get('room_id') 
+    def close_room(self, request): 
+        room_name = request.data.get('room_name') 
  
-        room = Room.objects.get(id=room_id) 
-        room.members.all().delete() 
+        room = Room.objects.get(id=room_name) 
+        #room.members.all().delete() 
         room.delete() 
         return Response({'message': 'Все пользователи удалены из комнаты'}, status=status.HTTP_200_OK)
     

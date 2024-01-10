@@ -1,17 +1,20 @@
 from collections.abc import Iterable 
 from django.db import models 
- 
- 
+from .utils import create_jwt_token, generate_unique_token
+
+
 class Room(models.Model): 
-    name = models.CharField(max_length=100) 
+    name = models.CharField(max_length=100, unique=True)
  
     created_at = models.DateTimeField(auto_now_add=True) 
     creator = models.OneToOneField('users.User', related_name='created_room', on_delete=models.CASCADE) 
  
-    password = models.CharField(max_length=100, blank=True, null=True) 
+    password = models.CharField(max_length=100, blank=True, null=True)
+
+    access_token = models.CharField(max_length=255) 
  
     def __str__(self) -> str: 
-        return self.name 
+        return self.name
      
  
 class Member(models.Model): 
@@ -30,7 +33,6 @@ class Messages(models.Model):
     message = models.CharField(max_length=100) 
  
     timestamp = models.DateTimeField(auto_now_add=True) 
- 
     class Meta: 
         ordering = ['-timestamp'] 
  

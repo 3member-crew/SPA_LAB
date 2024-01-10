@@ -72,14 +72,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         if signal == 'play':
 
-            #current_time = text_data_json['current_time']
+            current_time = text_data_json['currentTime']
 
             await self.channel_layer.group_send( 
                 self.room_group_name,
                 { 
                     'type': 'handlePlay', 
                     'signal': signal,
-                    'is_admin': is_admin
+                    'is_admin': is_admin,
+                    'currentTime': current_time
                 } 
             )
         if signal == 'url_change':
@@ -109,13 +110,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         print('check') 
         signal = event['signal']
         is_admin = event['is_admin']
-        #current_time = event['current_time']
+        current_time = event['currentTime']
 
         if is_admin:
             print('play')
             await self.send(text_data=json.dumps({ 
                 'signal': signal,
-                #'current_time': current_time
+                'currentTime': current_time
             })
             )
     
@@ -150,4 +151,3 @@ class RoomConsumer(AsyncWebsocketConsumer):
             'text': text, 
             'sender': sender 
         }))
-

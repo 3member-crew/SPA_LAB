@@ -33,8 +33,9 @@ const Room = () => {
         console.log("play");
 
         client.send(JSON.stringify({
-            "type": "signal",
-            "signal": "play",
+            type: "signal",
+            signal: "play",
+            currentTime: currentTime
         }));
     }
 
@@ -92,6 +93,7 @@ const Room = () => {
 
         if (signal === 'play') {
             const time = dataFromServer.currentTime;
+            console.log(time)
             setPlay(time);
         }
         if (signal === 'pause') {
