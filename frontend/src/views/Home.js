@@ -1,7 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faU, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import ReactPlayer from 'react-player';
 import '../App.css';
 import './Auth.js';
 
@@ -32,7 +29,7 @@ function Home() {
                     просмотра видео
                 </div>
                 <div id="room-creation-wrap">
-                    {localStorage.getItem('token') != null || localStorage.getItem('token') != undefined ? (
+                    {localStorage.getItem('token') !== null || localStorage.getItem('token') !== undefined ? (
                         <button onClick={HandleRoomCreateClick}>
                             Создать комнату
                         </button>
@@ -40,8 +37,7 @@ function Home() {
                         <button onClick={HandleLoginRegClick}>
                             Зарегистрируйтесь или войдите, чтобы создать комнату
                         </button>
-                    )
-                    }
+                    )}
                 </div>
             </div>
         </div>
