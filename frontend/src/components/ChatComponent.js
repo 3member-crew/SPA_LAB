@@ -33,12 +33,12 @@ class ChatComponent extends Component {
     onSendMessageClick = () => {
         const msgId = 0;
         const msgDate = undefined; // currentDate()
-        const msgText = this.chatInputRef.current.value;
+        const msgText = this.chatInputRef.current.value.trim();
         const username = "user N";
         const userIsSender = true;
         const msgPosition = userIsSender ? "right" : "left";
 
-        if (!msgText) {
+        if (msgText.length === 0) {
             return;
         }
 
