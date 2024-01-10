@@ -28,26 +28,43 @@ function JoinRoom() {
     async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
-        const respone = await client.get('/v1/rooms/get/', {
-            params: 
-            {
-                name: roomName,
-                password: roomPassword
-            },
+        await client.post('v1/rooms/join_room/', {
+            name: roomName,
+            password: roomPassword
+        })
+        .then(response => {
+            //navigate(`/room/${response.data.name}`)
+            const room_token = response.data.room_token
+            localStorage.setItem('room_access', room_token)
+            navigate('/home')
+        })
+        .catch(e => {
+            console.log(e['response']['data']['error']);
+
         })
     };
+
     
     async function HandleCreateClick() {
         const roomName = createRoomNameRef.current.value;
         const roomPassword = createRoomPasswordRef.current.value;
         console.log(roomName, roomPassword)
-        const respone = await client.post('v1/rooms/create/', {
+        await client.post('v1/rooms/create/', {
             name: roomName,
             password: roomPassword
 
         })
+        .then(response => {
+            //navigate(`/room/${response.data.name}`)
+            const room_token = response.data.room_token
+            localStorage.setItem('room_access', room_token)
+            navigate('/room');
+        })
+        .catch(e => {
+            const exception = e['response']['data']['error'];
+            console.log(exception);
+        });
 
-        navigate('/room');
     };
 
     return (
