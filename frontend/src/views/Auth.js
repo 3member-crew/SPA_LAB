@@ -1,5 +1,5 @@
 import '../App.css';
-import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faVk, faGoogle, faCreativeCommonsBy } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
@@ -33,7 +33,7 @@ function Auth() {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
-        
+        console.log(respone)
         const token = respone.data.token;
         localStorage.setItem('token', token);
 

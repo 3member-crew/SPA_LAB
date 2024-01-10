@@ -32,7 +32,7 @@ def register(request):
 #     print(request.data)
 #     username = request.data['username']
 #     password = request.data['password']
-
+#     print(request.data)
 #     user = User.objects.filter(username=username).first()
 
 #     if user and user.check_password(password):
@@ -40,7 +40,6 @@ def register(request):
 #         print(token.key)
 #         return Response({
 #             'token':token.key})
-    
 #     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])

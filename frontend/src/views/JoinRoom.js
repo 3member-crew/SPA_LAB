@@ -28,12 +28,13 @@ function JoinRoom() {
     async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
-        console.log(roomName, roomPassword)
-        const respone = await client.post('/v1/rooms/get/', {
-            name: "test1",
-            password: "test"
+        const respone = await client.get('/v1/rooms/get/', {
+            params: 
+            {
+                name: roomName,
+                password: roomPassword
+            },
         })
-        console.log(respone.data)
     };
     
     async function HandleCreateClick() {
