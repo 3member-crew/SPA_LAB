@@ -1,9 +1,10 @@
 import '../App.css';
-import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faVk, faGoogle, faCreativeCommonsBy } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import client from '../Url';
 
 function Auth() {
     const navigate = useNavigate(); 
@@ -33,15 +34,14 @@ function Auth() {
             password: loginPasswordRef.current.value,
         })
         
-        const token = response.data.token;
-        
-        localStorage.setItem('token', JSON.stringify(token));
-        
+        const token = respone.data.token;
+        localStorage.setItem('token', token);
+
         navigate('../');
     };
     
     async function HandleRegisterClick() {
-        const response = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
+        const respone = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,

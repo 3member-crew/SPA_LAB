@@ -9,5 +9,4 @@ def get_token(user):
     token, created = Token.objects.get_or_create(user=user)
     if (token):
         return token
-    else:
-        return created
+    return created

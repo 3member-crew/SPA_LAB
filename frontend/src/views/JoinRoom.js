@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
+import client from '../Url';
 
 function JoinRoom() {
     const createRoomNameRef = useRef(null);
@@ -24,15 +25,27 @@ function JoinRoom() {
         container.classList.add("active");
     };
     
-    function HandleConnectClick() {
+    async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
-
+        const respone = await client.get('/v1/rooms/get/', {
+            params: 
+            {
+                name: roomName,
+                password: roomPassword
+            },
+        })
     };
     
-    function HandleCreateClick() {
+    async function HandleCreateClick() {
         const roomName = createRoomNameRef.current.value;
         const roomPassword = createRoomPasswordRef.current.value;
+        console.log(roomName, roomPassword)
+        const respone = await client.post('v1/rooms/create/', {
+            name: roomName,
+            password: roomPassword
+
+        })
 
         navigate('/room');
     };
@@ -45,7 +58,7 @@ function JoinRoom() {
                     <span>
                         придумайте название комнаты и пароль
                     </span>
-                    <input type="text" placeholder="Комната" ref={createRoomNameRef}></input>
+                    <input type="email" placeholder="Комната" ref={createRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={createRoomPasswordRef}></input>
                     <button onClick={HandleCreateClick}>Создать</button>
                 </form>
@@ -56,7 +69,7 @@ function JoinRoom() {
                     <span>
                         введите название комнаты и пароль
                     </span>
-                    <input type="text" placeholder="Комната" ref={connectRoomNameRef}></input>
+                    <input type="email" placeholder="Комната" ref={connectRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={connectRoomPasswordRef}></input>
                     <button onClick={HandleConnectClick}>Подключиться</button>
                 </form>

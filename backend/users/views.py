@@ -23,17 +23,17 @@ def register(request):
         })
         return response
     
-    return Response(serializer.errors, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login(request):
-    print(request.data)
-    username = request.data['username']
-    password = request.data['password']
-
-    user = User.objects.filter(username=username).first()
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def login(request):
+#     print(request.data)
+#     username = request.data['username']
+#     password = request.data['password']
+#     print(request.data)
+#     user = User.objects.filter(username=username).first()
 
     if user and user.check_password(password):
         token = get_token(user)
