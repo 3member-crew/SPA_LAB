@@ -35,14 +35,14 @@ def register(request):
 #     print(request.data)
 #     user = User.objects.filter(username=username).first()
 
-    if user and user.check_password(password):
-        token = get_token(user)
-        print(token.key)
-        return Response({
-            'token': token.key,
-        })
+    # if user and user.check_password(password):
+    #     token = get_token(user)
+    #     print(token.key)
+    #     return Response({
+    #         'token': token.key,
+    #     })
     
-    return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    # return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
