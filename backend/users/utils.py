@@ -9,3 +9,4 @@ def get_token(user):
     if (token):
         return token
     return created
+
