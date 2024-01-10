@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.js';
+import axios from 'axios';
 
 import '../App.css';
 import './Auth.js';
@@ -7,21 +8,42 @@ import './Auth.js';
 function AccountPage() {    
     const navigate = useNavigate();
 
-    function HandleLogout() {
+    async function HandleLogout() {
+        await axios.post('http://127.0.0.1:8000/api/auth/logout');
         localStorage.clear();
         navigate('../');
     }
 
+    function HandleLoginRegClick() {
+        navigate('../Auth');
+    }
+
     return (
         <div>
-            <Header />
-            <div id="account-info-wrap">
-                <div>
-                    <button onClick={HandleLogout}>
-                        logout
-                    </button>
+            {localStorage.getItem('token' !== null) ? ([
+                <Header />,
+                <div id="introduction-wrap">
+                    <div>
+                    </div>
+                    <div style={{fontSize: '40px', fontStyle: 'bold', marginBottom: '50px'}}>
+                        
+                    </div>
+                    <div>
+                        <button onClick={HandleLogout}>
+                            Выйти из аккаунта
+                        </button>
+                    </div>
                 </div>
-            </div>
+            ]) : (
+                <div id="introduction-wrap">
+                    <div>
+                        <button onClick={HandleLoginRegClick}>
+                            Зайти в аккаунт
+                        </button>
+                    </div>
+                </div>
+            )}
+            
         </div>
     )
 }
