@@ -15,7 +15,8 @@ ALLOWED_HOSTS = ['*']
  
 # Application definition 
  
-INSTALLED_APPS = [ 
+INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin', 
     'django.contrib.auth', 
     'django.contrib.contenttypes', 
@@ -27,7 +28,7 @@ INSTALLED_APPS = [
     'rooms', 
     'corsheaders', 
     'rest_framework.authtoken', 
-    'channels', 
+    'channels',
 ] 
  
 MIDDLEWARE = [ 
@@ -65,9 +66,9 @@ ASGI_APPLICATION = 'watch_together_api.asgi.application'
 #CHANNELS_REDIS_HOST = str(os.environ.get('CHANNELS_REDIS_HOST', default='localhost')) 
 #CHANNELS_REDIS_PORT = int(os.environ.get('CHANNELS_REDIS_PORT', default=6379)) 
  
-CHANNEL_LAYERS = { 
-    'default': { 
-        'BACKEND': 'channels_redis.core.InMemoryChannelLayer', 
+CHANNEL_LAYERS = {
+    "default": { 
+         "BACKEND": "channels.layers.InMemoryChannelLayer", 
         }, 
 } 
  

@@ -1,10 +1,14 @@
 import '../App.css';
-import { faVk, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faVk, faGoogle, faCreativeCommonsBy } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import client from '../Url';
 
 function Auth() {
+    const navigate = useNavigate(); 
+
     const regUsernameRef = useRef(null);
     const regEmailRef = useRef(null);
     const regPasswordRef = useRef(null);
@@ -24,27 +28,30 @@ function Auth() {
         container.classList.add("active");
     };
     
-    function HandleLoginClick() {
-        const respone = axios.post('http://127.0.0.1:8000/api/auth/login/', {
+    async function HandleLoginClick() { 
+        const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
-    
-        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
-        localStorage.setItem('token', respone.data.token);
-        localStorage.getItem('token').console.log();
+        
+        const token = respone.data.token;
+        localStorage.setItem('token', token);
+
+        navigate('../');
     };
     
-    function HandleRegisterClick() {
-        const respone = axios.post('http://127.0.0.1:8000/api/auth/register/', {
+    async function HandleRegisterClick() {
+        const respone = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,
         })
-    
-        const token = '70d78f8ecb656fd3a3987b8451be05e330c05612';
-        localStorage.setItem('token', respone.data.token);
-        localStorage.getItem('token').console.log();
+        
+        const token = response.data.token;
+        
+        localStorage.setItem('token', JSON.stringify(token));
+
+        navigate('../');
     };
 
     return (
@@ -63,7 +70,7 @@ function Auth() {
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="text" placeholder="Имя" ref={regUsernameRef}></input>
+                    <input type="email" placeholder="email" ref={regUsernameRef}></input>
                     <input type="email" placeholder="Email" ref={regEmailRef}></input>
                     <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
                     <button onClick={HandleRegisterClick}>Создать</button>
@@ -83,7 +90,7 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="email" placeholder="Email" ref={loginUsernameRef}></input>
+                    <input type="email" placeholder="Логин" ref={loginUsernameRef}></input>
                     <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
                     <button onClick={HandleLoginClick}>Войти</button>

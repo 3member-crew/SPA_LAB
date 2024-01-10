@@ -248,6 +248,15 @@ body {
     cursor: pointer;
 }
 
+#logo button {
+    padding: 20px;
+    font-size: 40px;
+    background-color: #512da8;
+    border: 0px;
+    color: #fff;
+    cursor: pointer;
+}
+
 #introduction-wrap {
     border-radius: 20px;
     border: solid 2px #512da8;

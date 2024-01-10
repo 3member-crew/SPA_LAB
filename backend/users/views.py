@@ -18,28 +18,29 @@ def register(request):
         token = create_token(user)
 
         response = Response()
-        response.status_text = status.HTTP_200_OK
         response.data = ({
             'token': token.key,
         })
         return response
     
-    return Response(serializer.errors, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login(request):
-    username = request.data['username']
-    password = request.data['password']
-
-    user = User.objects.filter(username=username).first()
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def login(request):
+#     print(request.data)
+#     username = request.data['username']
+#     password = request.data['password']
+#     print(request.data)
+#     user = User.objects.filter(username=username).first()
 
     if user and user.check_password(password):
         token = get_token(user)
         print(token.key)
         return Response({
-            'token':token.key})
+            'token': token.key,
+        })
     
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
