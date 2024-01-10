@@ -1,6 +1,8 @@
 import React, { Component, useRef } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
+import ChatComponent from '../components/ChatComponent';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import "../App.css";
 
 
 const Room = () => {
@@ -13,6 +15,7 @@ const Room = () => {
     // }
 
     const mediaPlayerRef = useRef();
+    const chatRef = useRef();
 
     const client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
 
@@ -57,9 +60,9 @@ const Room = () => {
         }
     }
 
-    const setPlay = (time = undefined) => {
+    const setPlay = (time) => {
         if (mediaPlayerRef.current) {
-            console.log("set play");
+            console.log(`SET PLAY ON TIME ${time}`);
             mediaPlayerRef.current.play(time);
         }
     }
@@ -88,7 +91,7 @@ const Room = () => {
         const signal = dataFromServer.signal
 
         if (signal === 'play') {
-            const time = undefined;
+            const time = dataFromServer.currentTime;
             setPlay(time);
         }
         if (signal === 'pause') {
@@ -112,17 +115,25 @@ const Room = () => {
     }
 
     return (
-        <div>
-            <MediaPlayer
-                ref={mediaPlayerRef}
-                onPlay={handlePlay}
-                onPause={handlePause}
-                onUrlChange={handleUrlChange}
-            />
-            <button onClick={setPlay}>play</button>
-            <button onClick={setPause}>pause</button>
+        <div className="room-container">
+            <div className="left-side-container">
+                <MediaPlayer
+                    ref={mediaPlayerRef}
+                    onPlay={handlePlay}
+                    onPause={handlePause}
+                    onUrlChange={handleUrlChange}
+                />
+                <button onClick={handlePlay}>play</button>
+                <button onClick={handlePause}>pause</button>
+            </div>
+            <div className="right-side-container">
+                <ChatComponent
+                    ref={chatRef}
+                />
+            </div>
         </div>
-    )
+    );
 }
 
 export default Room;
+
