@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import client from '../Url';
 
 function Auth() {
     const navigate = useNavigate(); 
@@ -28,7 +29,7 @@ function Auth() {
     };
     
     async function HandleLoginClick() { 
-        const respone = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
+        const respone = await client.post('/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
@@ -40,7 +41,7 @@ function Auth() {
     };
     
     async function HandleRegisterClick() {
-        const respone = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
+        const respone = await client.post('/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,

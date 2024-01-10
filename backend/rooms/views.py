@@ -5,38 +5,48 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ViewSet 
 from rest_framework import status 
 from rest_framework.response import Response 
- 
+from rest_framework.decorators import action
+
 import os, sys 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 from users.serializers import UserSerializer 
 from users.models import User 
  
  
-class RoomView(ViewSet): 
+class RoomView(ViewSet):
+    queryset = Room.objects.all()
     serializer_class = RoomSerializer 
     permission_classes = [IsAuthenticated] 
- 
-    def get_room(self, request): 
-        room_id = request.data.get('room_id') 
-        room = Room.objects.get(id=room_id) 
-        serializer = RoomSerializer(room) 
-        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+    
+    def get_room(self, request):
+        print(request.data)
+        room_name = request.data.get('name') 
+        #password = request.data.get('password')
+
+        room = Room.objects.get(name=room_name) 
+        if room.password == "test":
+            serializer = RoomSerializer(room) 
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'details' : 'bad password'}, status=status.HTTP_400_BAD_REQUEST) 
      
-    def create_room(self, request): 
+    def create_room(self, request):
+        print(request.data)
         serializer = RoomSerializer(data=request.data, context={'request': request}) 
         serializer.is_valid(raise_exception=True) 
         serializer.save() 
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
      
-    def get_all(self, request): 
+    def get_all(self, request):
+        print(request)
         rooms = Room.objects.all() 
         serializer = RoomSerializer(rooms, many=True) 
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
      
-    def delete_room(self, request): 
-        room_id = request.data.get('room_id') 
+    def delete_room(self, request):
+        print(request)
+        room_id = request.data.get('name') 
         try: 
-            room = Room.objects.get(id=room_id) 
+            room = Room.objects.get(name=room_id) 
             room.delete() 
             return Response({'message': 'Room deleted'}, status=200) 
         except Room.DoesNotExist: 
