@@ -29,7 +29,6 @@ const Room = () => {
     }
 
     const handlePlay = (currentTime) => {
-        // currentTime: seconds 
         console.log("play");
 
         client.send(JSON.stringify({
@@ -63,8 +62,8 @@ const Room = () => {
 
     const setPlay = (time) => {
         if (mediaPlayerRef.current) {
-            console.log(`SET PLAY ON TIME ${time}`);
-            mediaPlayerRef.current.play(time);
+            mediaPlayerRef.current.seekTo(time);
+            mediaPlayerRef.current.play();
         }
     }
 
@@ -93,8 +92,12 @@ const Room = () => {
 
         if (signal === 'play') {
             const time = dataFromServer.currentTime;
-            console.log(time)
-            setPlay(time);
+
+            const userIsAdmin = true;
+
+            if (!userIsAdmin) { 
+                setPlay(time);
+            }
         }
         if (signal === 'pause') {
             setPause();
@@ -125,8 +128,6 @@ const Room = () => {
                     onPause={handlePause}
                     onUrlChange={handleUrlChange}
                 />
-                <button onClick={handlePlay}>play</button>
-                <button onClick={handlePause}>pause</button>
             </div>
             <div className="right-side-container">
                 <ChatComponent

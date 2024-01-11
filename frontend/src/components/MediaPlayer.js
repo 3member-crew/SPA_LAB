@@ -8,11 +8,15 @@ class MediaPlayer extends Component {
         super(props);
         this.state = {
             url: defaultUrl,
-            currentTime: 0,
+            currentTime: 0.00,
             isPlaying: false,
             played: 0
         };
         this.playerRef = React.createRef();
+    }
+
+    getIsPlaying = () => {
+        return this.state.isPlaying;
     }
 
     handleUrlChange = (event) => {
@@ -49,11 +53,15 @@ class MediaPlayer extends Component {
         this.setState({ isPlaying: false });
     };
 
-    play = (time) => {
+    seekTo = (time) => {
         if (time) {
-            //this.playerRef.current.seekTo(time);
             this.setState({ currentTime: time });
-        }
+        } 
+        
+        this.playerRef.current.seekTo(this.state.currentTime);
+    }
+
+    play = () => {
         this.setState({ isPlaying: true });
     };
 
