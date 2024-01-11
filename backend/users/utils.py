@@ -1,5 +1,4 @@
 from rest_framework.authtoken.models import Token
-
 def create_token(user):
     token = Token.objects.create(user=user)
     return token

@@ -29,19 +29,19 @@ function Auth() {
     };
     
     async function HandleLoginClick() { 
-        const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
+        const response = await client.post('/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
         
-        const token = respone.data.token;
+        const token = response.data.token;
         localStorage.setItem('token', token);
 
         navigate('../');
     };
     
     async function HandleRegisterClick() {
-        const respone = await axios.post('http://127.0.0.1:8000/api/auth/register/', {
+        const response = await client.post('/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
             password: regPasswordRef.current.value,
@@ -49,7 +49,7 @@ function Auth() {
         
         const token = response.data.token;
         
-        localStorage.setItem('token', JSON.stringify(token));
+        localStorage.setItem('token', token);
 
         navigate('../');
     };
@@ -70,7 +70,7 @@ function Auth() {
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="email" placeholder="email" ref={regUsernameRef}></input>
+                    <input type="email" placeholder="Имя" ref={regUsernameRef}></input>
                     <input type="email" placeholder="Email" ref={regEmailRef}></input>
                     <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
                     <button onClick={HandleRegisterClick}>Создать</button>
