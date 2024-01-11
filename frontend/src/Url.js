@@ -6,4 +6,4 @@ const client = axios.create({
         'Authorization': localStorage.getItem('token')? 'Token ' + localStorage.getItem('token') : null,
      },
 })
-export default client
+export default client;

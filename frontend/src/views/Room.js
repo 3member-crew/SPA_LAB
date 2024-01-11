@@ -1,51 +1,112 @@
-import React, { Component, useRef } from 'react';
+import React, { Component } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
 import ChatComponent from '../components/ChatComponent';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import client from "../Url";
 import "../App.css";
 
 
-const Room = () => {
-    // state = {
-    //     isLoggedIn: false,
-    //     messages: [],
-    //     value: '',
-    //     name: '',
-    //     room: 'test',
-    // }
+class Room extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            room: {},
+            userName: "",
+            isAdmin: false,
+        }
 
-    const mediaPlayerRef = useRef();
-    const chatRef = useRef();
+        this.chatRef = React.createRef();
+        this.mediaPlayerRef = React.createRef();
 
-    const client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
+        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
+    }
 
-    const handlePause = () => {
+    componentDidMount = () => {
+        this.client.onopen = () => {
+            console.log('WebSocket Client Connected');
+        };
+    
+        this.client.onmessage = (message) => {
+            const dataFromServer = JSON.parse(message.data);
+            const signal = dataFromServer.signal
+    
+            if (signal === 'play') {
+                const time = dataFromServer.currentTime;
+    
+                if (!this.state.isAdmin) {
+                    this.setPlay(time);
+                }
+            }
+            if (signal === 'pause') {
+                this.setPause();
+            }
+            if (signal === 'url_change') {
+                const newUrl = 'new-url';
+                this.setUrl(newUrl);
+            }
+        }
+
+        this.getRoom();
+
+        console.log(this.state.isAdmin ? "admin" : "not-admin");
+    }
+
+    getRoom = async () => {
+        const roomName = "room";
+
+        await client.get("/v1/rooms/get/", {
+            params: { name: roomName }
+        })
+        .then(response => {
+            const room = response.data.room; // id + creater + roomName 
+            const isAdmin = response.data.isAdmin;
+
+            this.setState({
+                room: room,
+                isAdmin: isAdmin,
+            });
+        })
+        .catch(e => {
+            const exception = e['response']['data']['error'];
+            console.log(exception);
+        });
+    }
+
+    handlePause = () => {
+        if (!this.state.isAdmin) {
+            return;
+        }
+
         console.log("pause");
 
-        client.send(JSON.stringify({
+        this.client.send(JSON.stringify({
             "type": "signal",
             "signal": "pause",
         }));
     }
 
-    const handlePlay = (currentTime) => {
+    handlePlay = (currentTime) => {
+        if (!this.state.isAdmin) {
+            return;
+        }
+
         console.log("play");
 
-        client.send(JSON.stringify({
+        this.client.send(JSON.stringify({
             type: "signal",
             signal: "play",
             currentTime: currentTime
         }));
     }
 
-    const handleVideoProgress = (progress) => {
+    handleVideoProgress = (progress) => {
         console.log("progress", progress.playedSeconds);
     }
 
-    const handleUrlChange = (newUrl) => {
+    handleUrlChange = (newUrl) => {
         console.log("url change");
 
-        client.send(JSON.stringify({
+        this.client.send(JSON.stringify({
             "type": "signal",
             "message": "play",
             "currentTime": newUrl,
@@ -53,62 +114,35 @@ const Room = () => {
         }));
     }
 
-    const setPause = () => {
-        if (mediaPlayerRef.current) {
+    setPause = () => {
+        if (this.mediaPlayerRef.current) {
             console.log("set pause");
-            mediaPlayerRef.current.pause();
+            this.mediaPlayerRef.current.pause();
         }
     }
 
-    const setPlay = (time) => {
-        if (mediaPlayerRef.current) {
-            mediaPlayerRef.current.seekTo(time);
-            mediaPlayerRef.current.play();
+    setPlay = (time) => {
+        if (this.mediaPlayerRef.current) {
+            this.mediaPlayerRef.current.seekTo(time);
+            this.mediaPlayerRef.current.play();
         }
     }
 
-    const setProgress = (progress) => {
-        if (mediaPlayerRef.current) {
+    setProgress = (progress) => {
+        if (this.mediaPlayerRef.current) {
             console.log("set progress");
-            mediaPlayerRef.current.setProgress(progress);
+            this.mediaPlayerRef.current.setProgress(progress);
         }
     }
 
-    const setUrl = (newUrl) => {
-        if (mediaPlayerRef.current) {
+    setUrl = (newUrl) => {
+        if (this.mediaPlayerRef.current) {
             console.log("set url");
-            mediaPlayerRef.current.setUrl(newUrl);
+            this.mediaPlayerRef.current.setUrl(newUrl);
         }
     }
 
-
-    client.onopen = () => {
-        console.log('WebSocket Client Connected');
-    };
-
-    client.onmessage = (message) => {
-        const dataFromServer = JSON.parse(message.data);
-        const signal = dataFromServer.signal
-
-        if (signal === 'play') {
-            const time = dataFromServer.currentTime;
-
-            const userIsAdmin = true;
-
-            if (!userIsAdmin) { 
-                setPlay(time);
-            }
-        }
-        if (signal === 'pause') {
-            setPause();
-        }
-        if (signal === 'url_change') {
-            const newUrl = 'new-url';
-            setUrl(newUrl);
-        }
-    }
-
-    const requireAuth = (nextState, replace, next) => {
+    requireAuth = (nextState, replace, next) => {
         if (!localStorage.getItem('token')) {
             replace({
                 pathname: "/login",
@@ -119,23 +153,25 @@ const Room = () => {
         next();
     }
 
-    return (
-        <div className="room-container">
-            <div className="left-side-container">
-                <MediaPlayer
-                    ref={mediaPlayerRef}
-                    onPlay={handlePlay}
-                    onPause={handlePause}
-                    onUrlChange={handleUrlChange}
-                />
+    render() {
+        return (
+            <div className="room-container">
+                <div className="left-side-container">
+                    <MediaPlayer
+                        ref={this.mediaPlayerRef}
+                        onPlay={this.handlePlay}
+                        onPause={this.handlePause}
+                        onUrlChange={this.handleUrlChange}
+                    />
+                </div>
+                <div className="right-side-container">
+                    <ChatComponent
+                        ref={this.chatRef}
+                    />
+                </div>
             </div>
-            <div className="right-side-container">
-                <ChatComponent
-                    ref={chatRef}
-                />
-            </div>
-        </div>
-    );
+        );
+    }
 }
 
 export default Room;

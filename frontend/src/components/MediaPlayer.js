@@ -10,7 +10,6 @@ class MediaPlayer extends Component {
             url: defaultUrl,
             currentTime: 0.00,
             isPlaying: false,
-            played: 0
         };
         this.playerRef = React.createRef();
     }
@@ -30,7 +29,7 @@ class MediaPlayer extends Component {
 
     handlePlay = () => {
         if (this.props.onPlay) {
-            const currentTime = this.playerRef.current.getCurrentTime();
+            const currentTime = this.state.currentTime;
             this.props.onPlay(currentTime);
         }
     };
@@ -42,7 +41,7 @@ class MediaPlayer extends Component {
     };
 
     handleProgress = (progress) => {
-        this.setState({ played: progress.playedSeconds });
+        this.setState({ currentTime: progress.playedSeconds });
 
         if (this.props.onProgress) {
             this.props.onProgress(progress);
@@ -87,9 +86,6 @@ class MediaPlayer extends Component {
                 <ReactPlayer
                     ref={this.playerRef}
                     url={url}
-                    onReady={() => {
-                        //   videoRef.current.seekTo(room.played);
-                    }}
                     onStart={this.handlePlay}
                     onPlay={this.handlePlay}
                     onPause={this.handlePause}
@@ -103,3 +99,4 @@ class MediaPlayer extends Component {
 }
 
 export default MediaPlayer;
+
