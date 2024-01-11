@@ -23,13 +23,14 @@ class RoomView(ViewSet):
 
         room_name = request.query_params.get('name')
 
-
         if Room.objects.filter(name=room_name).exists() == False:
             return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
         
         room = Room.objects.get(name=room_name)
+        is_admin = room.creator == request.user
+
         serializer = RoomSerializer(room) 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'room': serializer.data, 'isAdmin': is_admin}, status=status.HTTP_201_CREATED)
      
     def create_room(self, request):
         print(request.data)
