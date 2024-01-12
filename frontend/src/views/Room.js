@@ -47,8 +47,6 @@ class Room extends Component {
         }
 
         this.getRoom();
-
-        console.log(this.state.isAdmin ? "admin" : "not-admin");
     }
 
     getRoom = async () => {
@@ -116,28 +114,28 @@ class Room extends Component {
 
     setPause = () => {
         if (this.mediaPlayerRef.current) {
-            console.log("set pause");
+            console.log("setPause");
             this.mediaPlayerRef.current.pause();
         }
     }
 
     setPlay = (time) => {
         if (this.mediaPlayerRef.current) {
-            this.mediaPlayerRef.current.seekTo(time);
-            this.mediaPlayerRef.current.play();
+            console.log("setPlay");
+            this.mediaPlayerRef.current.seekToAndPlay(time);
         }
     }
 
     setProgress = (progress) => {
         if (this.mediaPlayerRef.current) {
-            console.log("set progress");
+            console.log("setProgress");
             this.mediaPlayerRef.current.setProgress(progress);
         }
     }
 
     setUrl = (newUrl) => {
         if (this.mediaPlayerRef.current) {
-            console.log("set url");
+            console.log("setUrl");
             this.mediaPlayerRef.current.setUrl(newUrl);
         }
     }
@@ -153,6 +151,14 @@ class Room extends Component {
         next();
     }
 
+    click1 = () => {
+        this.mediaPlayerRef.current.play();
+    }
+
+    click2 = () => {
+        this.mediaPlayerRef.current.pause();
+    }
+
     render() {
         return (
             <div className="room-container">
@@ -163,6 +169,8 @@ class Room extends Component {
                         onPause={this.handlePause}
                         onUrlChange={this.handleUrlChange}
                     />
+                    <button onClick={this.click1}>set play</button>
+                    <button onClick={this.click2}>set pause</button>
                 </div>
                 <div className="right-side-container">
                     <ChatComponent
@@ -175,4 +183,3 @@ class Room extends Component {
 }
 
 export default Room;
-
