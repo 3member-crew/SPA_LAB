@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
-import ChatComponent from '../components/ChatComponent';
+import Chat from '../components/Chat';
+import UserList from '../components/UserList';
+import PlayList from '../components/Playlist';
+import Switcher from '../components/Switcher';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import client from "../Url";
 import "../App.css";
@@ -13,6 +16,8 @@ class Room extends Component {
             room: {},
             userName: "",
             isAdmin: false,
+            rightSideItem: "chat",
+            messages: [],
         }
 
         this.chatRef = React.createRef();
@@ -25,14 +30,14 @@ class Room extends Component {
         this.client.onopen = () => {
             console.log('WebSocket Client Connected');
         };
-    
+
         this.client.onmessage = (message) => {
             const dataFromServer = JSON.parse(message.data);
             const signal = dataFromServer.signal
-    
+
             if (signal === 'play') {
                 const time = dataFromServer.currentTime;
-    
+
                 if (!this.state.isAdmin) {
                     this.setPlay(time);
                 }
@@ -43,6 +48,18 @@ class Room extends Component {
             if (signal === 'url_change') {
                 const newUrl = 'new-url';
                 this.setUrl(newUrl);
+            }
+            if (signal === 'chat') {
+                const msgText = dataFromServer.text;
+                const sender = dataFromServer.sender;
+
+                const message = this.chatRef.current.createMessage(msgText, sender);
+
+                this.setState(prevState => ({
+                    messages: [...prevState.messages, message]
+                }), () => {
+                    this.updateChatMessageList();
+                });
             }
         }
 
@@ -55,19 +72,19 @@ class Room extends Component {
         await client.get("/v1/rooms/get/", {
             params: { name: roomName }
         })
-        .then(response => {
-            const room = response.data.room; // id + creater + roomName 
-            const isAdmin = response.data.isAdmin;
+            .then(response => {
+                const room = response.data.room; // id + creater + roomName 
+                const isAdmin = response.data.isAdmin;
 
-            this.setState({
-                room: room,
-                isAdmin: isAdmin,
+                this.setState({
+                    room: room,
+                    isAdmin: isAdmin,
+                });
+            })
+            .catch(e => {
+                const exception = e['response']['data']['error'];
+                console.log(exception);
             });
-        })
-        .catch(e => {
-            const exception = e['response']['data']['error'];
-            console.log(exception);
-        });
     }
 
     handlePause = () => {
@@ -140,6 +157,48 @@ class Room extends Component {
         }
     }
 
+    updateChatMessageList = () => {
+        const {messages} = this.state;
+
+        this.chatRef.current.setMessageList(messages);
+    }
+
+    handleSendMessage = (message) => {
+        this.client.send(JSON.stringify({
+            signal: "chat",
+            text: message.text,
+            sender: message.title,
+        }));
+    }
+
+    handleSwitcherChange = (selectedOptions) => {
+        if (selectedOptions.length > 0) {
+            const rightSideItem = selectedOptions[0].value;
+            this.setState({ rightSideItem });
+        }
+    };
+
+    renderRightSideComponent() {
+        const { rightSideItem, messages } = this.state;
+
+        switch (rightSideItem) {
+            case "chat":
+                return (
+                    <Chat 
+                        ref={this.chatRef} 
+                        messages={messages} 
+                        onSendMessage={this.handleSendMessage}
+                    />
+                );
+            case "playlist":
+                return <PlayList />;
+            case "userlist":
+                return <UserList />;
+            default:
+                return null;
+        }
+    }
+
     requireAuth = (nextState, replace, next) => {
         if (!localStorage.getItem('token')) {
             replace({
@@ -149,14 +208,6 @@ class Room extends Component {
         }
 
         next();
-    }
-
-    click1 = () => {
-        this.mediaPlayerRef.current.play();
-    }
-
-    click2 = () => {
-        this.mediaPlayerRef.current.pause();
     }
 
     render() {
@@ -169,13 +220,10 @@ class Room extends Component {
                         onPause={this.handlePause}
                         onUrlChange={this.handleUrlChange}
                     />
-                    <button onClick={this.click1}>set play</button>
-                    <button onClick={this.click2}>set pause</button>
                 </div>
                 <div className="right-side-container">
-                    <ChatComponent
-                        ref={this.chatRef}
-                    />
+                    <Switcher onChange={this.handleSwitcherChange} />
+                    {this.renderRightSideComponent()}
                 </div>
             </div>
         );

@@ -9,14 +9,30 @@ const currentDate = () => {
 }
 
 
-class ChatComponent extends Component {
+class Chat extends Component {
     constructor(props) {
         super(props);
+        const messages = this.props.messages ? this.props.messages : [];
+
         this.state = {
-            messages: [],
+            messages: messages,
         };
 
         this.chatInputRef = React.createRef();
+    }
+
+    setMessageList = (msgList) => {
+        this.setState({ messages: msgList });
+    }
+
+    createMessage = (msgText, sender, type = "text") => {
+        const msg = {
+            type: type,
+            text: msgText,
+            title: sender,
+        };
+
+        return msg;
     }
 
     addMessage = (message) => {
@@ -42,10 +58,7 @@ class ChatComponent extends Component {
             return;
         }
 
-        console.log(msgText);
-
         const msg = {
-            id: msgId,
             position: msgPosition,
             type: "text",
             title: username,
@@ -54,19 +67,15 @@ class ChatComponent extends Component {
             className: "no-scrollbar",
         };
 
-        this.addMessage(msg);
+        // this.addMessage(msg); // это добавляет сообщение в msgList только для конкретного компонента чата
         this.clearChatInput();
 
         if (this.props.onSendMessage) {
-            this.props.onSendMessage(); // это не должно работать
+            this.props.onSendMessage(msg);
         }
     }
 
     onUserConnect = () => {
-        if (this.props.onUserConnect) {
-            this.props.onUserConnect(); // это не должно работать
-        }
-
         const msgId = 0;
         const msgDate = currentDate();
         const username = "user 1";
@@ -77,14 +86,14 @@ class ChatComponent extends Component {
             date: msgDate,
         };
 
-        this.addMessage(msg);
+        // this.addMessage(msg);
+
+        if (this.props.onSendMessage) {
+            this.props.onSendMessage(msg);
+        }
     }
 
     onUserDisconnect = () => {
-        if (this.props.onUserDisconnect) {
-            this.props.onUserDisconnect(); // это не должно работать
-        }
-
         const msgId = 0;
         const msgDate = currentDate();
         const username = "user 1";
@@ -95,7 +104,11 @@ class ChatComponent extends Component {
             text: `${username} - вышел из комнаты`,
         };
 
-        this.addMessage(msg);
+        // this.addMessage(msg);
+
+        if (this.props.onSendMessage) {
+            this.props.onSendMessage(msg);
+        }
     }
 
     handleKeyDown = (event) => {
@@ -136,5 +149,5 @@ class ChatComponent extends Component {
     }
 }
 
-export default ChatComponent;
+export default Chat;
 

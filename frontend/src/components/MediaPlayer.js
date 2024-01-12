@@ -1,7 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import ReactPlayer from 'react-player/lazy';
 
-const defaultUrl = 'https://www.youtube.com/watch?v=m-omQDaa9R0&pp=ygUFY2hpcGk%3D';
+const defaultUrl = 'https://www.youtube.com/watch?v=fgTykFNRbjs';
 
 class MediaPlayer extends Component {
     constructor(props) {
@@ -101,7 +101,7 @@ class MediaPlayer extends Component {
                     onPause={this.handlePause}
                     playing={isPlaying}
                     controls={true}
-                    stopOnUnmount={true}
+                    stopOnUnmount={false}
                 />
             </>
         );
