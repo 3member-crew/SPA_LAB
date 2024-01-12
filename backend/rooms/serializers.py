@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from users.serializers import UserSerializer 
  
 class RoomSerializer(serializers.ModelSerializer): 
-    creator = UserSerializer(read_only=True) 
+    creator = UserSerializer(read_only=True)
     access_token = serializers.CharField(read_only=True)
     class Meta: 
         model = Room 
