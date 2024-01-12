@@ -20,7 +20,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name'] 
         self.room_group_name = self.room_name
         self.user = await self.get_user(self.scope['query_string'])
-        self.room = await self.get_room(self.room_name)
+        self.room = await self.get_room("room")
 
         await self.get_members()
         if self.user is not None:
@@ -52,8 +52,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def get_members(self):
         room = self.room
         try:
-            members = Member.objects.filter(room=room).all()
-            print(members)
+            members = room.members.all()
+            serializer = MembersSerializer(members, many=True)
+            return serializer.data
         except:
             print("Нет мемберов")
 
@@ -134,10 +135,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text = text_data_json['text']
             sender = text_data_json['sender']
 
-            self.channel_layer.group_send(
+            await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'handleChat',
+                    'signal': signal,
                     'message': text,
                     'sender': sender
                 }
@@ -184,15 +186,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
     # Chat handle
             
     async def handleChat(self, event): 
+        signal = event['signal']
         text = event['message'] 
         sender = event['sender'] 
         members = await self.get_members()
-        serializer = MembersSerializer(members, many=True)
+        # serializer = MembersSerializer(members, many=True)
 
         await self.send(text_data=json.dumps({ 
+            'signal': signal,
             'text': text, 
             'sender': sender,
-            'members': serializer 
+            # 'members': serializer 
         }))
     # Connection close
             
