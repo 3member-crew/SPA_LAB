@@ -52,8 +52,9 @@ class Room extends Component {
             if (signal === 'chat') {
                 const msgText = dataFromServer.text;
                 const sender = dataFromServer.sender;
+                const { userName } = this.state;
 
-                const message = this.chatRef.current.createMessage(msgText, sender);
+                const message = this.chatRef.current.createMessage(msgText, sender, userName);
 
                 this.setState(prevState => ({
                     messages: [...prevState.messages, message]
@@ -73,8 +74,10 @@ class Room extends Component {
             params: { name: roomName }
         })
             .then(response => {
-                const room = response.data.room; // id + creater + roomName 
+                const room = response.data.room;
                 const isAdmin = response.data.isAdmin;
+
+                // console.log(response.data);
 
                 this.setState({
                     room: room,
@@ -158,7 +161,7 @@ class Room extends Component {
     }
 
     updateChatMessageList = () => {
-        const {messages} = this.state;
+        const { messages } = this.state;
 
         this.chatRef.current.setMessageList(messages);
     }
@@ -178,15 +181,20 @@ class Room extends Component {
         }
     };
 
+    handleHomeClick = () => {
+        console.log("Home button clicked");
+    };
+
     renderRightSideComponent() {
-        const { rightSideItem, messages } = this.state;
+        const { rightSideItem, messages, userName } = this.state;
 
         switch (rightSideItem) {
             case "chat":
                 return (
-                    <Chat 
-                        ref={this.chatRef} 
-                        messages={messages} 
+                    <Chat
+                        ref={this.chatRef}
+                        messages={messages}
+                        userName={userName}
                         onSendMessage={this.handleSendMessage}
                     />
                 );
@@ -214,6 +222,12 @@ class Room extends Component {
         return (
             <div className="room-container">
                 <div className="left-side-container">
+                    <span>
+                        <button onClick={this.handleHomeClick}>На главную</button>
+                        <div>
+                            {this.state.room.name}
+                        </div>
+                    </span>
                     <MediaPlayer
                         ref={this.mediaPlayerRef}
                         onPlay={this.handlePlay}
@@ -225,7 +239,7 @@ class Room extends Component {
                     <Switcher onChange={this.handleSwitcherChange} />
                     {this.renderRightSideComponent()}
                 </div>
-            </div>
+            </div >
         );
     }
 }

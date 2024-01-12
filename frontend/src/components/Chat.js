@@ -8,14 +8,15 @@ const currentDate = () => {
     return new Date(Date.now());
 }
 
-
 class Chat extends Component {
     constructor(props) {
         super(props);
         const messages = this.props.messages ? this.props.messages : [];
+        const userName = this.props.userName ? this.props.userName : "";
 
         this.state = {
             messages: messages,
+            userName: userName
         };
 
         this.chatInputRef = React.createRef();
@@ -23,13 +24,19 @@ class Chat extends Component {
 
     setMessageList = (msgList) => {
         this.setState({ messages: msgList });
+
+        console.log(this.state.userName);
     }
 
-    createMessage = (msgText, sender, type = "text") => {
+    createMessage = (msgText, sender, userName, type = "text") => {
+        const position = (userName === sender) ? "right" : "left";
+
         const msg = {
             type: type,
             text: msgText,
             title: sender,
+            position: position,
+            className: "no-scrollbar",
         };
 
         return msg;
@@ -47,64 +54,20 @@ class Chat extends Component {
     }
 
     onSendMessageClick = () => {
-        const msgId = 0;
-        const msgDate = undefined; // currentDate()
         const msgText = this.chatInputRef.current.value.trim();
-        const username = "user N";
-        const userIsSender = true;
-        const msgPosition = userIsSender ? "right" : "left";
+        const { userName } = this.state;
 
         if (msgText.length === 0) {
             return;
         }
 
         const msg = {
-            position: msgPosition,
             type: "text",
-            title: username,
+            title: userName,
             text: msgText,
-            date: msgDate,
-            className: "no-scrollbar",
         };
 
-        // this.addMessage(msg); // это добавляет сообщение в msgList только для конкретного компонента чата
         this.clearChatInput();
-
-        if (this.props.onSendMessage) {
-            this.props.onSendMessage(msg);
-        }
-    }
-
-    onUserConnect = () => {
-        const msgId = 0;
-        const msgDate = currentDate();
-        const username = "user 1";
-
-        const msg = {
-            type: "system",
-            text: `${username} - зашел в комнату`,
-            date: msgDate,
-        };
-
-        // this.addMessage(msg);
-
-        if (this.props.onSendMessage) {
-            this.props.onSendMessage(msg);
-        }
-    }
-
-    onUserDisconnect = () => {
-        const msgId = 0;
-        const msgDate = currentDate();
-        const username = "user 1";
-
-        const msg = {
-            type: "system",
-            date: msgDate,
-            text: `${username} - вышел из комнаты`,
-        };
-
-        // this.addMessage(msg);
 
         if (this.props.onSendMessage) {
             this.props.onSendMessage(msg);
