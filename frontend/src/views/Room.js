@@ -48,7 +48,8 @@ class Room extends Component {
                 this.setPause();
             }
             if (signal === 'url_change') {
-                const newUrl = 'new-url';
+                const newUrl = dataFromServer.new_url;
+                console.log(newUrl)
                 this.setUrl(newUrl);
             }
             if (signal === 'chat') {
@@ -64,10 +65,10 @@ class Room extends Component {
                     this.updateChatMessageList();
                 });
             }
-            if (signal === "userlist_change") {
-                const newUserList = [];
+            if (signal === "user_list") {
+                const users = dataFromServer.members;
 
-
+                this.setState({ users: users });
             }
         }
 
@@ -122,8 +123,7 @@ class Room extends Component {
         console.log("pause");
 
         this.client.send(JSON.stringify({
-            "type": "signal",
-            "signal": "pause",
+            signal: "pause",
         }));
     }
 
@@ -135,7 +135,6 @@ class Room extends Component {
         console.log("play");
 
         this.client.send(JSON.stringify({
-            type: "signal",
             signal: "play",
             currentTime: currentTime
         }));
@@ -146,13 +145,15 @@ class Room extends Component {
     }
 
     handleUrlChange = (newUrl) => {
-        console.log("url change");
+        if (!this.state.isAdmin) {
+            return;
+        }
+
+        console.log(`new url: ${newUrl}`);
 
         this.client.send(JSON.stringify({
-            "type": "signal",
-            "message": "play",
-            "currentTime": newUrl,
-            "token": localStorage.getItem('token'),
+            signal: "url_change",
+            new_url: newUrl,
         }));
     }
 
@@ -179,10 +180,6 @@ class Room extends Component {
 
     setUrl = (newUrl) => {
         if (this.mediaPlayerRef.current) {
-            if (!this.state.isAdmin) {
-                return;
-            }
-            
             console.log("setUrl");
             this.mediaPlayerRef.current.setUrl(newUrl);
         }
@@ -245,6 +242,7 @@ class Room extends Component {
                     <UserList 
                         ref={this.userListRef}
                         users={users}
+                        key={users}
                     />
                 );
             default:
