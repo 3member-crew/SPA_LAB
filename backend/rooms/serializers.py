@@ -40,8 +40,8 @@ class MembersSerializer(serializers.ModelSerializer):
     room = RoomSerializer(read_only=True) 
     class Meta: 
         model = Member 
-        fields = '__all__' 
- 
+        fields = ('user') 
+
  
 class VideoSerializer(serializers.ModelSerializer): 
     room = RoomSerializer(read_only=True) 

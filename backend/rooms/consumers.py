@@ -30,8 +30,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 ) 
                 
             await self.accept()
+
+            await self.channel_layer.group_send( 
+                self.room_group_name,
+                { 
+                    'type': 'handleGetMembers',
+                } 
+            )
+
         else:
             await self.close()
+    
     
     @database_sync_to_async
     def get_user(self, query_string):
@@ -61,10 +70,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code): 
   
         print(self.user)
+        await self.channel_layer.group_send( 
+                self.room_group_name,
+                { 
+                    'type': 'handleGetMembers',
+                } 
+        )
+        
         await self.channel_layer.group_discard( 
                 self.room_group_name, 
                 self.channel_name 
-            ) 
+            )
+        
          
 
     @database_sync_to_async 
@@ -90,6 +107,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if signal == 'play':
 
             current_time = text_data_json['currentTime']
+            
 
             await self.channel_layer.group_send( 
                 self.room_group_name,
@@ -144,6 +162,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     'sender': sender
                 }
             )
+    
+    async def handleGetMembers(self, events):
+        members = self.get_members()
+        await self.send(text_data=json.dumps({
+            'signal': 'user_list',
+            'members': members
+        }))
 
  
     # Video handlers
