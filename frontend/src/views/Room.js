@@ -4,7 +4,9 @@ import Chat from '../components/Chat';
 import UserList from '../components/UserList';
 import PlayList from '../components/Playlist';
 import Switcher from '../components/Switcher';
+import withRouter from '../components/withRouter';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { decode } from "base-64";
 import client from "../Url";
 import "../App.css";
 
@@ -75,12 +77,10 @@ class Room extends Component {
         this.getRoom();
 
         this.getCurrentUser();
-
-        // this.getUserList();
     }
 
     getRoom = async () => {
-        const roomName = "room";
+        const roomName = this.getRoomName();
 
         await client.get("/v1/rooms/get/", {
             params: { name: roomName }
@@ -104,15 +104,26 @@ class Room extends Component {
 
     getCurrentUser = async () => {
         await client.get("/auth/profile/")
-        .then(response => {
-            const userName = response.data.username;
+            .then(response => {
+                const userName = response.data.username;
 
-            this.setState({ userName: userName });
-        })
-        .catch(e => {
-            const exception = e['response']['data']['error'];
-            console.log(exception);
-        });
+                this.setState({ userName: userName });
+            })
+            .catch(e => {
+                const exception = e['response']['data']['error'];
+                console.log(exception);
+            });
+    }
+
+
+    getRoomName = () => {
+        const { location } = this.props.router;
+        const path = location.pathname;
+        const parts = path.split('/');
+        const encodedRoomName = parts[parts.length - 1];
+        const roomName = decode(encodedRoomName); // Decode the encoded room name
+
+        return roomName;
     }
 
     handlePause = () => {
@@ -214,8 +225,7 @@ class Room extends Component {
             params: {
                 name: roomName
             }
-        })
-        .then(response => {
+        }).then(response => {
             const msg = response.data.message;
         })
 
@@ -239,7 +249,7 @@ class Room extends Component {
                 return <PlayList />;
             case "userlist":
                 return (
-                    <UserList 
+                    <UserList
                         ref={this.userListRef}
                         users={users}
                         key={users}
@@ -287,4 +297,4 @@ class Room extends Component {
     }
 }
 
-export default Room;
+export default withRouter(Room);

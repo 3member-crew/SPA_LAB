@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
+import { encode } from 'base-64';
 import client from '../Url';
 
 function JoinRoom() {
@@ -28,41 +29,45 @@ function JoinRoom() {
     async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
+        
         await client.post('v1/rooms/join_room/', {
             name: roomName,
             password: roomPassword
         })
         .then(response => {
-            //navigate(`/room/${response.data.name}`)
-            const room_token = response.data.room_token
-            localStorage.setItem('room_access', room_token)
-            navigate('/home')
+            const room_token = response.data.room_token;
+            localStorage.setItem('room_access', room_token);
+            navigate(`/room/${encode(response.data.name)}`);
+            // navigate('/home')
         })
         .catch(e => {
-            console.log(e['response']['data']['error']);
-
+            const exception = e['response']['data']['error'];
+            console.log(exception);
+            navigate('/');
         })
     };
-
     
     async function HandleCreateClick() {
         const roomName = createRoomNameRef.current.value;
         const roomPassword = createRoomPasswordRef.current.value;
-        console.log(roomName, roomPassword)
+
+        const encodedRoomName = encode(roomName);
+        console.log(encodedRoomName);
+
         await client.post('v1/rooms/create/', {
             name: roomName,
             password: roomPassword
-
         })
         .then(response => {
             //navigate(`/room/${response.data.name}`)
             const room_token = response.data.room_token
             localStorage.setItem('room_access', room_token)
-            navigate('/room');
+            navigate(`/room/${encodedRoomName}`);
         })
         .catch(e => {
             const exception = e['response']['data']['error'];
             console.log(exception);
+            navigate('/');
         });
 
     };
@@ -77,7 +82,7 @@ function JoinRoom() {
                     </span>
                     <input type="email" placeholder="Комната" ref={createRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={createRoomPasswordRef}></input>
-                    <button onClick={HandleCreateClick}>Создать</button>
+                    <button type="button" onClick={HandleCreateClick}>Создать</button>
                 </form>
             </div>
             <div className="form-container sign-in">
@@ -88,7 +93,7 @@ function JoinRoom() {
                     </span>
                     <input type="email" placeholder="Комната" ref={connectRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={connectRoomPasswordRef}></input>
-                    <button onClick={HandleConnectClick}>Подключиться</button>
+                    <button type="button" onClick={HandleConnectClick}>Подключиться</button>
                 </form>
             </div>
             <div className="toggle-container">

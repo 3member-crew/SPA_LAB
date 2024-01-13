@@ -7,12 +7,12 @@ import Header from '../components/Header.js';
 function Home() {
     const navigate = useNavigate();
 
-    function HandleLoginRegClick() {
+    function handleLoginRegClick() {
         navigate('./Auth');
     }
 
-    function HandleRoomCreateClick() {
-        navigate('./Home');
+    function handleRoomCreateClick() {
+        navigate('./join_room');
     }
     
     return (
@@ -30,11 +30,11 @@ function Home() {
                 </div>
                 <div id="room-creation-wrap">
                     {localStorage.getItem('token') !== null || localStorage.getItem('token') !== undefined ? (
-                        <button onClick={HandleRoomCreateClick}>
+                        <button onClick={handleRoomCreateClick}>
                             Создать комнату
                         </button>
                     ) : (
-                        <button onClick={HandleLoginRegClick}>
+                        <button onClick={handleLoginRegClick}>
                             Зарегистрируйтесь или войдите, чтобы создать комнату
                         </button>
                     )}
