@@ -16,7 +16,7 @@ class Chat extends Component {
 
         this.state = {
             messages: messages,
-            userName: userName
+            userName: userName,
         };
 
         this.chatInputRef = React.createRef();
@@ -24,8 +24,6 @@ class Chat extends Component {
 
     setMessageList = (msgList) => {
         this.setState({ messages: msgList });
-
-        console.log(this.state.userName);
     }
 
     createMessage = (msgText, sender, userName, type = "text") => {

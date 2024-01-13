@@ -64,9 +64,18 @@ class Room extends Component {
                     this.updateChatMessageList();
                 });
             }
+            if (signal === "userlist_change") {
+                const newUserList = [];
+
+
+            }
         }
 
         this.getRoom();
+
+        this.getCurrentUser();
+
+        // this.getUserList();
     }
 
     getRoom = async () => {
@@ -90,6 +99,19 @@ class Room extends Component {
                 const exception = e['response']['data']['error'];
                 console.log(exception);
             });
+    }
+
+    getCurrentUser = async () => {
+        await client.get("/auth/profile/")
+        .then(response => {
+            const userName = response.data.username;
+
+            this.setState({ userName: userName });
+        })
+        .catch(e => {
+            const exception = e['response']['data']['error'];
+            console.log(exception);
+        });
     }
 
     handlePause = () => {
@@ -183,8 +205,19 @@ class Room extends Component {
         }
     };
 
-    handleHomeClick = () => {
+    handleHomeClick = async () => {
         console.log("Home button clicked");
+        const { roomName } = this.state.room.name;
+
+        await client.delete("/v1/rooms/leave/", {
+            params: {
+                name: roomName
+            }
+        })
+        .then(response => {
+            const msg = response.data.message;
+        })
+
     };
 
     renderRightSideComponent() {
@@ -198,6 +231,7 @@ class Room extends Component {
                         messages={messages}
                         userName={userName}
                         onSendMessage={this.handleSendMessage}
+                        key={userName}
                     />
                 );
             case "playlist":

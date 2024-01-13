@@ -12,7 +12,7 @@ class Playlist extends Component {
     render() {
         return (
             <div className="playlist-container-inner">
-                playlist
+                playlist в разработке
             </div>
         )
     }
