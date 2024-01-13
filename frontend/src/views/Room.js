@@ -18,10 +18,12 @@ class Room extends Component {
             isAdmin: false,
             rightSideItem: "chat",
             messages: [],
+            users: [],
         }
 
         this.chatRef = React.createRef();
         this.mediaPlayerRef = React.createRef();
+        this.userListRef = React.createRef();
 
         this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
     }
@@ -186,7 +188,7 @@ class Room extends Component {
     };
 
     renderRightSideComponent() {
-        const { rightSideItem, messages, userName } = this.state;
+        const { rightSideItem, messages, userName, users } = this.state;
 
         switch (rightSideItem) {
             case "chat":
@@ -201,7 +203,12 @@ class Room extends Component {
             case "playlist":
                 return <PlayList />;
             case "userlist":
-                return <UserList />;
+                return (
+                    <UserList 
+                        ref={this.userListRef}
+                        users={users}
+                    />
+                );
             default:
                 return null;
         }
