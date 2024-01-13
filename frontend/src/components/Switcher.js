@@ -6,10 +6,10 @@ const defaultOptions = [
         value: "chat",
         label: "Чат"
     },
-    {
-        value: "playlist",
-        label: "Плейлист"
-    },
+    // {
+    //     value: "playlist",
+    //     label: "Плейлист"
+    // },
     {
         value: "userlist",
         label: "Список пользователей"

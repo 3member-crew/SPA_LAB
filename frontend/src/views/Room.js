@@ -179,6 +179,10 @@ class Room extends Component {
 
     setUrl = (newUrl) => {
         if (this.mediaPlayerRef.current) {
+            if (!this.state.isAdmin) {
+                return;
+            }
+            
             console.log("setUrl");
             this.mediaPlayerRef.current.setUrl(newUrl);
         }
