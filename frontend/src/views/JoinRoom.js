@@ -43,7 +43,7 @@ function JoinRoom() {
         .catch(e => {
             const exception = e['response']['data']['error'];
             console.log(exception);
-            navigate('/');
+            // navigate('/');
         })
     };
     

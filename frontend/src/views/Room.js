@@ -35,6 +35,8 @@ class Room extends Component {
     componentDidMount = () => {
         this.client.onopen = () => {
             console.log('WebSocket Client Connected');
+
+
         };
 
         this.client.onmessage = (message) => {
@@ -74,6 +76,10 @@ class Room extends Component {
 
                 this.setState({ users: users });
             }
+            if (signal === "room_state") {
+                const currentTime = dataFromServer.currentTime;
+                const currentVideoState = dataFromServer.currentVideoState;
+            }
         }
 
         this.getRoom();
@@ -90,6 +96,9 @@ class Room extends Component {
             .then(response => {
                 const room = response.data.room;
                 const isAdmin = response.data.isAdmin;
+                const url = response.data.room.url;
+
+                this.setUrl(url);
 
                 // console.log(response.data);
 

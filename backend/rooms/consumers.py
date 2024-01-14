@@ -37,6 +37,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             )
 
+            if self.creator != self.user:
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "handleNewMember",
+                },
+            )
+
         else:
             await self.close()
 
@@ -153,8 +161,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "sender": sender,
                 },
             )
+        
+        if signal == "room_state":
+            current_time = text_data_json["current_time"]
+            current_video_state = text_data_json["current_video_state"]
 
-    async def handleGetMembers(self, events):
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "handleUpdate",
+                    "signal": signal,
+                    "current_time": current_time,
+                    "current_video_state": current_video_state,
+                },
+            )
+
+    async def handleGetMembers(self, event):
         members = self.get_members()
 
         await self.send(
@@ -200,8 +222,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         signal = event["signal"]
         text = event["message"]
         sender = event["sender"]
-        members = await self.get_members()
-        # serializer = MembersSerializer(members, many=True)
 
         await self.send(
             text_data=json.dumps(
@@ -209,9 +229,30 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "signal": signal,
                     "text": text,
                     "sender": sender,
-                    # 'members': serializer
                 }
             )
+        )
+
+    async def handleNewMember(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "signal": "get_room_state",
+                }
+            )
+        )
+
+    async def handleUpdate(self, event):
+        current_time = event["current_time"]
+        current_video_state = event["current_video_state"]
+        signal = event["signal"]
+
+        await self.send(
+            text_data=json.dumps({
+                "signal": signal, 
+                "currentTime": current_time,
+                "currentVideoState": current_video_state,
+            })
         )
 
     # Connection close
