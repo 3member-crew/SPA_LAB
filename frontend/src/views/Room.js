@@ -27,7 +27,9 @@ class Room extends Component {
         this.mediaPlayerRef = React.createRef();
         this.userListRef = React.createRef();
 
-        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/test/?token=${localStorage.getItem('token')}`);
+        const roomName = this.getRoomName();
+
+        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/${roomName}/?token=${localStorage.getItem('token')}`);
     }
 
     componentDidMount = () => {
@@ -114,7 +116,6 @@ class Room extends Component {
                 console.log(exception);
             });
     }
-
 
     getRoomName = () => {
         const { location } = this.props.router;

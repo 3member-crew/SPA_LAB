@@ -22,7 +22,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = self.room_name
         self.user = await self.get_user(self.scope["query_string"])
-        self.room = await self.get_room("room")
+        self.room = await self.get_room(self.room_name)
 
         await self.get_members()
         if self.user is not None:
