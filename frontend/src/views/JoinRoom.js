@@ -4,10 +4,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { encode } from 'base-64';
+import { enc } from 'crypto-js';
+import Base64 from 'crypto-js/enc-base64';
 import client from '../Url';
 
-function JoinRoom() {
+
+const JoinRoom = () => {
     const createRoomNameRef = useRef(null);
     const createRoomPasswordRef = useRef(null);
 
@@ -29,6 +31,8 @@ function JoinRoom() {
     async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
+
+        const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
         
         await client.post('v1/rooms/join_room/', {
             name: roomName,
@@ -37,7 +41,7 @@ function JoinRoom() {
         .then(response => {
             const room_token = response.data.room_token;
             localStorage.setItem('room_access', room_token);
-            navigate(`/room/${encode(response.data.name)}`);
+            navigate(`/room/${encodedRoomName}`);
             // navigate('/home')
         })
         .catch(e => {
@@ -51,7 +55,7 @@ function JoinRoom() {
         const roomName = createRoomNameRef.current.value;
         const roomPassword = createRoomPasswordRef.current.value;
 
-        const encodedRoomName = encode(roomName);
+        const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
         console.log(encodedRoomName);
 
         await client.post('v1/rooms/create/', {

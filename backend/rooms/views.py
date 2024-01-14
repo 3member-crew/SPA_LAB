@@ -22,6 +22,7 @@ class RoomView(ViewSet):
     def get_room(self, request):
 
         room_name = request.query_params.get('name')
+        print(room_name)
 
         if Room.objects.filter(name=room_name).exists() == False:
             return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)

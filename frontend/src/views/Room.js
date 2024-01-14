@@ -6,7 +6,8 @@ import PlayList from '../components/Playlist';
 import Switcher from '../components/Switcher';
 import withRouter from '../components/withRouter';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-import { decode } from "base-64";
+import { enc } from 'crypto-js';
+import Base64 from 'crypto-js/enc-base64';
 import client from "../Url";
 import "../App.css";
 
@@ -35,8 +36,6 @@ class Room extends Component {
     componentDidMount = () => {
         this.client.onopen = () => {
             console.log('WebSocket Client Connected');
-
-
         };
 
         this.client.onmessage = (message) => {
@@ -79,6 +78,8 @@ class Room extends Component {
             if (signal === "room_state") {
                 const currentTime = dataFromServer.currentTime;
                 const currentVideoState = dataFromServer.currentVideoState;
+
+                console.log(`curTime: ${currentTime}`, `curVideoState: ${currentVideoState}`);
             }
         }
 
@@ -89,6 +90,8 @@ class Room extends Component {
 
     getRoom = async () => {
         const roomName = this.getRoomName();
+
+        console.log(roomName);
 
         await client.get("/v1/rooms/get/", {
             params: { name: roomName }
@@ -130,8 +133,11 @@ class Room extends Component {
         const { location } = this.props.router;
         const path = location.pathname;
         const parts = path.split('/');
+        console.log(parts);
         const encodedRoomName = parts[parts.length - 1];
-        const roomName = decode(encodedRoomName); // Decode the encoded room name
+        const roomName = enc.Utf8.stringify(Base64.parse(encodedRoomName));
+
+        console.log(roomName);
 
         return roomName;
     }
@@ -238,7 +244,6 @@ class Room extends Component {
         }).then(response => {
             const msg = response.data.message;
         })
-
     };
 
     renderRightSideComponent() {
