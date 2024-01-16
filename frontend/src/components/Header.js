@@ -25,24 +25,24 @@ function Header({ roomName }) {
         <div id="nav-wrap">
             <div id="header-wrap">
                 <div id="logo">
-                    <button onClick={HandleHomeClick}>W<span style={{position: 'relative', top: '20px', }}>3</span>G</button>
+                    <button onClick={HandleHomeClick}>W<span style={{ position: 'relative', top: '20px', }}>3</span>G</button>
                 </div>
                 <div id="navbar">
                     <button onClick={HandleHomeClick}>
-                        <FontAwesomeIcon icon={faHome} size='50px'/>
+                        <FontAwesomeIcon icon={faHome} size='50px' />
                     </button>
                     {room ? (
                         <div className='room-name-view'>
                             {room}
                         </div>
                     )
-                    :
-                    (
-                        <></>
-                    )
-                        
+                        :
+                        (
+                            <></>
+                        )
+
                     }
-                    {localStorage.getItem('token') != null ? (
+                    {sessionStorage.getItem('token') ? (
                         <button onClick={HandleUserClick}>
                             <FontAwesomeIcon icon={faUser} />
                         </button>
