@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
 import ChatComponent from '../components/ChatComponent';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { useNavigate } from 'react-router-dom';
 import client from "../Url";
 import "../App.css";
+
+import Header from '../components/Header.js';
 
 
 class Room extends Component {
@@ -153,18 +156,23 @@ class Room extends Component {
         next();
     }
 
+
     render() {
         return (
-            <div className="room-container">
-                <div className="left-side-container">
-                    <MediaPlayer
-                        ref={this.mediaPlayerRef}
-                        onPlay={this.handlePlay}
-                        onPause={this.handlePause}
-                        onUrlChange={this.handleUrlChange}
-                    />
+            <div className='room-container'>
+                <Header roomName={this.state.room.name} />
+                <div className='left-side-container'>
+                    <div className='player'>
+                        <MediaPlayer
+                            ref={this.mediaPlayerRef}
+                            onPlay={this.handlePlay}
+                            onPause={this.handlePause}
+                            onUrlChange={this.handleUrlChange}
+                            isAdmin={this.state.isAdmin}
+                        />
+                    </div>
                 </div>
-                <div className="right-side-container">
+                <div className='right-side-container'>
                     <ChatComponent
                         ref={this.chatRef}
                     />

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactPlayer from 'react-player/lazy';
+import "../App.css";
 
 const defaultUrl = 'https://youtu.be/0tOXxuLcaog';
 
@@ -10,6 +11,7 @@ class MediaPlayer extends Component {
             url: defaultUrl,
             currentTime: 0.00,
             isPlaying: false,
+            isAdmin: true,
         };
         this.playerRef = React.createRef();
     }
@@ -82,17 +84,20 @@ class MediaPlayer extends Component {
 
         return (
             <>
-                <input type="text" value={url} onChange={this.handleUrlChange} />
-                <ReactPlayer
-                    ref={this.playerRef}
-                    url={url}
-                    onStart={this.handlePlay}
-                    onPlay={this.handlePlay}
-                    onPause={this.handlePause}
-                    playing={isPlaying}
-                    controls={true}
-                    onProgress={this.handleProgress}
-                />
+                <div>
+                    <ReactPlayer
+                        ref={this.playerRef}
+                        url={url}
+                        onStart={this.handlePlay}
+                        onPlay={this.handlePlay}
+                        onPause={this.handlePause}
+                        playing={isPlaying}
+                        controls={true}
+                        onProgress={this.handleProgress}
+                        className='media-player'
+                    />
+                </div>
+                {this.state.isAdmin ? (<input type="text"value={url} onChange={this.handleUrlChange}></input>) : (<></>)}
             </>
         );
     }

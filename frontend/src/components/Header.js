@@ -3,10 +3,11 @@ import { faHome, faU, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-function Header() {
+function Header({ roomName }) {
     const navigate = useNavigate();
     const [show, setShow] = useState(true);
     const HandleShow = () => setShow(!show);
+    const room = roomName;
 
     function HandleHomeClick() {
         navigate('../');
@@ -30,6 +31,17 @@ function Header() {
                     <button onClick={HandleHomeClick}>
                         <FontAwesomeIcon icon={faHome} size='50px'/>
                     </button>
+                    {roomName ? (
+                        <div className='room-name-view'>
+                            {{roomName}}
+                        </div>
+                    )
+                    :
+                    (
+                        <></>
+                    )
+                        
+                    }
                     {localStorage.getItem('token') != null ? (
                         <button onClick={HandleUserClick}>
                             <FontAwesomeIcon icon={faUser} />

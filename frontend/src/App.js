@@ -23,18 +23,18 @@ function App() {
   }
 
   return (
-      <div className="main-container">
+      <>
           <BrowserRouter>
               <Routes>
                   <Route index element={<Home />} />
                   <Route exact path="/auth" element={<Auth />} />
-                  <Route exact path="/home" element={<JoinRoom />} />
+                  <Route exact path="/home" element={<Room />} />
                   <Route exact path="/room/:room" element={<Room />} />
                   <Route path="/account" element={<Account />} onEnter={HandleAccountPageEnter} />
                   <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
           </BrowserRouter>
-      </div>
+      </>
   );
 
 }
