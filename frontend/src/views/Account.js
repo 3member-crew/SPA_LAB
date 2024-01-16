@@ -10,7 +10,7 @@ function AccountPage() {
 
     async function HandleLogout() {
         await axios.post('http://127.0.0.1:8000/api/auth/logout');
-        localStorage.clear();
+        sessionStorage.clear();
         navigate('../');
     }
 
@@ -20,7 +20,7 @@ function AccountPage() {
 
     return (
         <div>
-            {localStorage.getItem('token' !== null) ? ([
+            {sessionStorage.getItem('token') ? ([
                 <Header />,
                 <div id="introduction-wrap">
                     <div>

@@ -31,9 +31,9 @@ function Header({ roomName }) {
                     <button onClick={HandleHomeClick}>
                         <FontAwesomeIcon icon={faHome} size='50px'/>
                     </button>
-                    {roomName ? (
+                    {room ? (
                         <div className='room-name-view'>
-                            {{roomName}}
+                            {room}
                         </div>
                     )
                     :

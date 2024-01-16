@@ -32,7 +32,7 @@ class Room extends Component {
 
         const roomName = this.getRoomName();
 
-        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/${roomName}/?token=${localStorage.getItem('token')}`);
+        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/${roomName}/?token=${sessionStorage.getItem('token')}`);
     }
 
     componentDidMount = () => {
@@ -56,7 +56,6 @@ class Room extends Component {
             }
             if (signal === 'url_change') {
                 const newUrl = dataFromServer.new_url;
-                console.log(newUrl)
                 this.setUrl(newUrl);
             }
             if (signal === 'chat') {
@@ -135,11 +134,8 @@ class Room extends Component {
         const { location } = this.props.router;
         const path = location.pathname;
         const parts = path.split('/');
-        console.log(parts);
         const encodedRoomName = parts[parts.length - 1];
         const roomName = enc.Utf8.stringify(Base64.parse(encodedRoomName));
-
-        console.log(roomName);
 
         return roomName;
     }
@@ -278,7 +274,7 @@ class Room extends Component {
     }
 
     requireAuth = (nextState, replace, next) => {
-        if (!localStorage.getItem('token')) {
+        if (!sessionStorage.getItem('token')) {
             replace({
                 pathname: "/login",
                 state: { nextPathname: nextState.location.pathname }

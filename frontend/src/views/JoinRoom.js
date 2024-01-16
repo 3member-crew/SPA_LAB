@@ -40,7 +40,8 @@ const JoinRoom = () => {
         })
         .then(response => {
             const room_token = response.data.room_token;
-            localStorage.setItem('room_access', room_token);
+            sessionStorage.setItem('room_access', room_token);
+            console.log(`current room token: ${room_token}`);
             navigate(`/room/${encodedRoomName}`);
             // navigate('/home')
         })
@@ -65,7 +66,8 @@ const JoinRoom = () => {
         .then(response => {
             //navigate(`/room/${response.data.name}`)
             const room_token = response.data.room_token
-            localStorage.setItem('room_access', room_token)
+            sessionStorage.setItem('room_access', room_token)
+            console.log(`current room token: ${room_token}`);
             navigate(`/room/${encodedRoomName}`);
         })
         .catch(e => {

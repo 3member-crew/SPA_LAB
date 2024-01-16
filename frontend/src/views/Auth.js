@@ -33,7 +33,9 @@ function Auth() {
         })
         
         const token = response.data.token;
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };
@@ -47,7 +49,9 @@ function Auth() {
         
         const token = response.data.token;
         
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };

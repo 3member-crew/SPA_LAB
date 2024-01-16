@@ -10,15 +10,15 @@ import axios from "axios";
 
 function App() {
   async function HandleAccountPageEnter() {
-    if (localStorage.getItem('token' !== null)) {
+    if (sessionStorage.getItem('token')) {
       const response = await axios.get('http://127.0.0.1:8000/api/auth/profile/');
   
       console.log(JSON.parse(response.data));
       const email = response.data.data[0];
       const username = response.data.data[1];
   
-      localStorage.setItem('email', JSON.stringify(email));
-      localStorage.setItem('username', JSON.stringify(username));
+      sessionStorage.setItem('email', JSON.stringify(email));
+      sessionStorage.setItem('username', JSON.stringify(username));
     }
   }
 
