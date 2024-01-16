@@ -96,6 +96,7 @@ class Chat extends Component {
                         multiline={true}
                         autoHeight={false}
                         onKeyDown={this.handleKeyDown}
+                        className="chat-input-style"
                         rightButtons={
                             <Button
                                 text={"Отправить"}

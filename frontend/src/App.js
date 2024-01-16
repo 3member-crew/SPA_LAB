@@ -23,7 +23,7 @@ function App() {
   }
 
   return (
-      <div className="main-container">
+      <>
           <BrowserRouter>
               <Routes>
                   <Route index element={<Home />} />
@@ -34,7 +34,7 @@ function App() {
                   <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
           </BrowserRouter>
-      </div>
+      </>
   );
 
 }

@@ -11,6 +11,8 @@ import Base64 from 'crypto-js/enc-base64';
 import client from "../Url";
 import "../App.css";
 
+import Header from '../components/Header.js';
+
 
 class Room extends Component {
     constructor(props) {
@@ -286,24 +288,23 @@ class Room extends Component {
         next();
     }
 
+
     render() {
         return (
-            <div className="room-container">
-                <div className="left-side-container">
-                    <span>
-                        <button onClick={this.handleHomeClick}>На главную</button>
-                        <div>
-                            {this.state.room.name}
-                        </div>
-                    </span>
-                    <MediaPlayer
-                        ref={this.mediaPlayerRef}
-                        onPlay={this.handlePlay}
-                        onPause={this.handlePause}
-                        onUrlChange={this.handleUrlChange}
-                    />
+            <div className='room-container'>
+                <Header roomName={this.state.room.name} />
+                <div className='left-side-container'>
+                    <div className='player'>
+                        <MediaPlayer
+                            ref={this.mediaPlayerRef}
+                            onPlay={this.handlePlay}
+                            onPause={this.handlePause}
+                            onUrlChange={this.handleUrlChange}
+                            isAdmin={this.state.isAdmin}
+                        />
+                    </div>
                 </div>
-                <div className="right-side-container">
+                <div className='right-side-container'>
                     <Switcher onChange={this.handleSwitcherChange} />
                     {this.renderRightSideComponent()}
                 </div>
