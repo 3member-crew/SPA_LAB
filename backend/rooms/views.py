@@ -131,6 +131,9 @@ class MemberView(ViewSet):
         room_name = request.query_params.get('name') 
         #user_id = request.query_params.get('user_id') 
 
+        if Room.objects.filter(name=room_name).exists() == False:
+            return Response({'message': 'room was deleted'}, status=status.HTTP_200_OK)
+
  
         room = Room.objects.get(name=room_name)  
         #user = User.objects.get(id=user_id) 

@@ -24,6 +24,7 @@ class Room extends Component {
             rightSideItem: "chat",
             messages: [],
             users: [],
+            videoState: false,
         }
 
         this.chatRef = React.createRef();
@@ -76,17 +77,72 @@ class Room extends Component {
 
                 this.setState({ users: users });
             }
+            if (signal === "get_room_state") {
+                if (this.state.isAdmin) {
+                    this.sendRoomState();
+                }
+            }
             if (signal === "room_state") {
-                const currentTime = dataFromServer.currentTime;
-                const currentVideoState = dataFromServer.currentVideoState;
+                if (!this.state.isAdmin) {
+                    const currentTime = dataFromServer.currentTime;
+                    const currentVideoState = dataFromServer.currentVideoState;
 
-                console.log(`curTime: ${currentTime}`, `curVideoState: ${currentVideoState}`);
+                    console.log(`curTime: ${currentTime}`, `curVideoState: ${currentVideoState}`);
+
+                    if (currentVideoState) {
+                        this.setPlay(currentTime);
+                    }
+                }
+            }
+            if (signal === "disconnect") {
+                console.log("disconnect received");
+                this.redirectHome();
             }
         }
 
         this.getRoom();
 
         this.getCurrentUser();
+    }
+
+    componentWillUnmount = async () => {
+        if (this.state.isAdmin) {
+            await this.sendDisconnectSignal();
+        }
+
+        const client = createClient();
+
+        const roomName = this.state.room.name;
+
+        await client.delete("/v1/rooms/leave/", {
+            params: { name: roomName }
+        })
+            .then(response => {
+                const msg = response.data.message;
+            })
+            .catch(e => {
+                const exception = e['response']['data']['message'];
+                console.log(exception);
+            });
+    }
+
+    sendRoomState = () => {
+        if (this.state.isAdmin) {
+            const currentVideoState = this.state.videoState;
+            let currentTime = 0.00;
+
+            if (this.mediaPlayerRef.current) {
+                currentTime = this.mediaPlayerRef.current.getCurrentTime();
+            }
+
+            // console.log(`send playing state = ${currentVideoState}`);
+
+            this.client.send(JSON.stringify({
+                signal: "room_state",
+                current_time: currentTime,
+                current_video_state: currentVideoState,
+            }));
+        }
     }
 
     getRoom = async () => {
@@ -149,6 +205,8 @@ class Room extends Component {
             return;
         }
 
+        this.setState({ videoState: false });
+
         console.log("pause");
 
         this.client.send(JSON.stringify({
@@ -160,6 +218,8 @@ class Room extends Component {
         if (!this.state.isAdmin) {
             return;
         }
+
+        this.setState({ videoState: true });
 
         console.log("play");
 
@@ -235,7 +295,7 @@ class Room extends Component {
         }
     };
 
-    handleHomeClick = async () => {
+    handleHomeClick = async () => { // button ne sush
         console.log("Home button clicked");
         const { roomName } = this.state.room.name;
 
@@ -277,6 +337,18 @@ class Room extends Component {
             default:
                 return null;
         }
+    }
+
+    sendDisconnectSignal = async () => {
+        await this.client.send(JSON.stringify({
+            signal: "disconnect",
+        }));
+    }
+
+    redirectHome = async () => {
+        const { navigate } = this.props.router;
+
+        navigate("../");
     }
 
     requireAuth = (nextState, replace, next) => {

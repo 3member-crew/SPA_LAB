@@ -47,6 +47,12 @@ class MediaPlayer extends Component {
         }
     };
 
+    handleProgress = (progress) => {
+        const time = progress.playedSeconds;
+
+        this.setState({ currentTime: time });
+    }
+
     pause = () => {
         this.setState({ isPlaying: false });
         console.log("player - pause");
