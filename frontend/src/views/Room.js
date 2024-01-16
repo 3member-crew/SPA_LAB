@@ -8,7 +8,7 @@ import withRouter from '../components/withRouter';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { enc } from 'crypto-js';
 import Base64 from 'crypto-js/enc-base64';
-import client from "../Url";
+import createClient from "../Url";
 import "../App.css";
 
 import Header from '../components/Header.js';
@@ -94,6 +94,8 @@ class Room extends Component {
 
         console.log(roomName);
 
+        const client = createClient();
+
         await client.get("/v1/rooms/get/", {
             params: { name: roomName }
         })
@@ -118,6 +120,8 @@ class Room extends Component {
     }
 
     getCurrentUser = async () => {
+        const client = createClient();
+
         await client.get("/auth/profile/")
             .then(response => {
                 const userName = response.data.username;
@@ -234,6 +238,8 @@ class Room extends Component {
     handleHomeClick = async () => {
         console.log("Home button clicked");
         const { roomName } = this.state.room.name;
+
+        const client = createClient();
 
         await client.delete("/v1/rooms/leave/", {
             params: {

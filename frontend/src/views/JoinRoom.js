@@ -6,7 +6,7 @@ import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { enc } from 'crypto-js';
 import Base64 from 'crypto-js/enc-base64';
-import client from '../Url';
+import createClient from '../Url';
 
 
 const JoinRoom = () => {
@@ -33,6 +33,8 @@ const JoinRoom = () => {
         const roomPassword = connectRoomPasswordRef.current.value;
 
         const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
+
+        const client = createClient();
         
         await client.post('v1/rooms/join_room/', {
             name: roomName,
@@ -58,6 +60,8 @@ const JoinRoom = () => {
 
         const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
         console.log(encodedRoomName);
+
+        const client = createClient();
 
         await client.post('v1/rooms/create/', {
             name: roomName,
