@@ -10,31 +10,31 @@ import axios from "axios";
 
 function App() {
   async function HandleAccountPageEnter() {
-    if (localStorage.getItem('token' !== null)) {
+    if (sessionStorage.getItem('token')) {
       const response = await axios.get('http://127.0.0.1:8000/api/auth/profile/');
   
       console.log(JSON.parse(response.data));
       const email = response.data.data[0];
       const username = response.data.data[1];
   
-      localStorage.setItem('email', JSON.stringify(email));
-      localStorage.setItem('username', JSON.stringify(username));
+      sessionStorage.setItem('email', JSON.stringify(email));
+      sessionStorage.setItem('username', JSON.stringify(username));
     }
   }
 
   return (
-      <div className="main-container">
+      <>
           <BrowserRouter>
               <Routes>
                   <Route index element={<Home />} />
                   <Route exact path="/auth" element={<Auth />} />
-                  <Route exact path="/home" element={<JoinRoom />} />
+                  <Route exact path="/join_room" element={<JoinRoom />} />
                   <Route exact path="/room/:room" element={<Room />} />
                   <Route path="/account" element={<Account />} onEnter={HandleAccountPageEnter} />
                   <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
           </BrowserRouter>
-      </div>
+      </>
   );
 
 }

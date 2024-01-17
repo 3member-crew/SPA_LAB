@@ -8,15 +8,36 @@ const currentDate = () => {
     return new Date(Date.now());
 }
 
-
-class ChatComponent extends Component {
+class Chat extends Component {
     constructor(props) {
         super(props);
+        const messages = this.props.messages ? this.props.messages : [];
+        const userName = this.props.userName ? this.props.userName : "";
+
         this.state = {
-            messages: [],
+            messages: messages,
+            userName: userName,
         };
 
         this.chatInputRef = React.createRef();
+    }
+
+    setMessageList = (msgList) => {
+        this.setState({ messages: msgList });
+    }
+
+    createMessage = (msgText, sender, userName, type = "text") => {
+        const position = (userName === sender) ? "right" : "left";
+
+        const msg = {
+            type: type,
+            text: msgText,
+            title: sender,
+            position: position,
+            className: "no-scrollbar",
+        };
+
+        return msg;
     }
 
     addMessage = (message) => {
@@ -31,71 +52,24 @@ class ChatComponent extends Component {
     }
 
     onSendMessageClick = () => {
-        const msgId = 0;
-        const msgDate = undefined; // currentDate()
         const msgText = this.chatInputRef.current.value.trim();
-        const username = "user N";
-        const userIsSender = true;
-        const msgPosition = userIsSender ? "right" : "left";
+        const { userName } = this.state;
 
         if (msgText.length === 0) {
             return;
         }
 
-        console.log(msgText);
-
         const msg = {
-            id: msgId,
-            position: msgPosition,
             type: "text",
-            title: username,
+            title: userName,
             text: msgText,
-            date: msgDate,
-            className: "no-scrollbar",
         };
 
-        this.addMessage(msg);
         this.clearChatInput();
 
         if (this.props.onSendMessage) {
-            this.props.onSendMessage(); // это не должно работать
+            this.props.onSendMessage(msg);
         }
-    }
-
-    onUserConnect = () => {
-        if (this.props.onUserConnect) {
-            this.props.onUserConnect(); // это не должно работать
-        }
-
-        const msgId = 0;
-        const msgDate = currentDate();
-        const username = "user 1";
-
-        const msg = {
-            type: "system",
-            text: `${username} - зашел в комнату`,
-            date: msgDate,
-        };
-
-        this.addMessage(msg);
-    }
-
-    onUserDisconnect = () => {
-        if (this.props.onUserDisconnect) {
-            this.props.onUserDisconnect(); // это не должно работать
-        }
-
-        const msgId = 0;
-        const msgDate = currentDate();
-        const username = "user 1";
-
-        const msg = {
-            type: "system",
-            date: msgDate,
-            text: `${username} - вышел из комнаты`,
-        };
-
-        this.addMessage(msg);
     }
 
     handleKeyDown = (event) => {
@@ -122,6 +96,7 @@ class ChatComponent extends Component {
                         multiline={true}
                         autoHeight={false}
                         onKeyDown={this.handleKeyDown}
+                        className="chat-input-style"
                         rightButtons={
                             <Button
                                 text={"Отправить"}
@@ -136,5 +111,5 @@ class ChatComponent extends Component {
     }
 }
 
-export default ChatComponent;
+export default Chat;
 

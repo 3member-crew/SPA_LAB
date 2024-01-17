@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from django.db import models 
 from .utils import create_jwt_token, generate_unique_token
 
+DEFAULT_URL = "https://www.youtube.com/watch?v=fgTykFNRbjs"
 
 class Room(models.Model): 
     name = models.CharField(max_length=100, unique=True)
@@ -12,6 +13,8 @@ class Room(models.Model):
     password = models.CharField(max_length=100, blank=True, null=True)
 
     access_token = models.CharField(max_length=255) 
+
+    url = models.URLField(default=DEFAULT_URL)
  
     def __str__(self) -> str: 
         return self.name

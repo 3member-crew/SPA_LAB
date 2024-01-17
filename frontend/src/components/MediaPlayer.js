@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import ReactPlayer from 'react-player/lazy';
+import "../App.css";
 
-const defaultUrl = 'https://youtu.be/0tOXxuLcaog';
+const defaultUrl = 'https://www.youtube.com/watch?v=fgTykFNRbjs';
 
 class MediaPlayer extends Component {
     constructor(props) {
@@ -10,8 +11,13 @@ class MediaPlayer extends Component {
             url: defaultUrl,
             currentTime: 0.00,
             isPlaying: false,
+            isAdmin: true,
         };
         this.playerRef = React.createRef();
+    }
+
+    getCurrentTime = () => {
+        return this.state.currentTime;
     }
 
     getIsPlaying = () => {
@@ -29,7 +35,8 @@ class MediaPlayer extends Component {
 
     handlePlay = () => {
         if (this.props.onPlay) {
-            const currentTime = this.state.currentTime;
+            const currentTime = this.playerRef.current.getCurrentTime();
+            this.setState({ currentTime: currentTime });
             this.props.onPlay(currentTime);
         }
     };
@@ -41,34 +48,41 @@ class MediaPlayer extends Component {
     };
 
     handleProgress = (progress) => {
-        this.setState({ currentTime: progress.playedSeconds });
+        const time = progress.playedSeconds;
 
-        if (this.props.onProgress) {
-            this.props.onProgress(progress);
-        }
-    };
+        this.setState({ currentTime: time });
+    }
 
     pause = () => {
         this.setState({ isPlaying: false });
+        console.log("player - pause");
     };
 
     seekTo = (time) => {
-        if (time) {
-            this.setState({ currentTime: time });
-        } 
+        const newTime = (time) ? time : this.state.currentTime;
         
-        this.playerRef.current.seekTo(this.state.currentTime);
+        this.setState({ currentTime: newTime }, () => {
+            this.playerRef.current.seekTo(this.state.currentTime);
+        });
     }
 
     play = () => {
         this.setState({ isPlaying: true });
+        console.log("player - play");
     };
 
-    setProgress = (progress) => {
-        if (progress) {
-            this.setState({ played: progress.playedSeconds });
-            this.playerRef.current.seekTo(progress.playedSeconds);
-        }
+    seekToAndPlay = (time) => {
+        const newTime = (time) ? time : this.state.currentTime;
+
+        this.seekTo(newTime);
+        this.play();
+    }
+
+    pauseAndSeekTo = (time) => {
+        const newTime = (time) ? time : this.state.currentTime;
+
+        this.playerRef.current.pause();
+        this.seekTo(time);
     }
 
     setUrl = (newUrl) => {
@@ -77,26 +91,32 @@ class MediaPlayer extends Component {
         }
     };
 
+    componentDidMount = () => {
+        this.playerRef.current.seekTo(0);
+    }
+
     render() {
         const { url, isPlaying } = this.state;
 
         return (
             <>
-                <input type="text" value={url} onChange={this.handleUrlChange} />
-                <ReactPlayer
-                    ref={this.playerRef}
-                    url={url}
-                    onStart={this.handlePlay}
-                    onPlay={this.handlePlay}
-                    onPause={this.handlePause}
-                    playing={isPlaying}
-                    controls={true}
-                    onProgress={this.handleProgress}
-                />
+                <div>
+                    <ReactPlayer
+                        ref={this.playerRef}
+                        url={url}
+                        onStart={this.handlePlay}
+                        onPlay={this.handlePlay}
+                        onPause={this.handlePause}
+                        playing={isPlaying}
+                        controls={true}
+                        onProgress={this.handleProgress}
+                        className='media-player'
+                    />
+                </div>
+                {this.state.isAdmin ? (<input type="text"value={url} onChange={this.handleUrlChange}></input>) : (<></>)}
             </>
         );
     }
 }
 
 export default MediaPlayer;
-

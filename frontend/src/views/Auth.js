@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import client from '../Url';
+import createClient from '../Url';
 
 function Auth() {
     const navigate = useNavigate(); 
@@ -16,31 +16,35 @@ function Auth() {
     const loginUsernameRef = useRef(null);
     const loginPasswordRef = useRef(null);
     
-    function SelectLogin() {
+    function selectLogin() {
         const container = document.getElementById('container');
-        const loginBtn = document.getElementById('login');
         container.classList.remove("active");
     };
     
-    function SelectRegister() {
+    function selectRegister() {
         const container = document.getElementById('container');
-        const registerBtn = document.getElementById('register');
         container.classList.add("active");
     };
     
-    async function HandleLoginClick() { 
+    async function handleLoginClick() { 
+        const client = createClient();
+
         const response = await client.post('/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
         
         const token = response.data.token;
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };
     
-    async function HandleRegisterClick() {
+    async function handleRegisterClick() {
+        const client = createClient();
+
         const response = await client.post('/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
@@ -49,7 +53,9 @@ function Auth() {
         
         const token = response.data.token;
         
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };
@@ -73,7 +79,7 @@ function Auth() {
                     <input type="email" placeholder="Имя" ref={regUsernameRef}></input>
                     <input type="email" placeholder="Email" ref={regEmailRef}></input>
                     <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
-                    <button onClick={HandleRegisterClick}>Создать</button>
+                    <button onClick={handleRegisterClick}>Создать</button>
                 </form>
             </div>
             <div className="form-container sign-in">
@@ -93,7 +99,9 @@ function Auth() {
                     <input type="email" placeholder="Логин" ref={loginUsernameRef}></input>
                     <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
                     <a href="#">Забыли пароль?</a>
-                    <button onClick={HandleLoginClick}>Войти</button>
+                    <button onClick={handleLoginClick}>
+                        Войти
+                    </button>
                 </form>
             </div>
             <div className="toggle-container">
@@ -101,14 +109,14 @@ function Auth() {
                     <div className="toggle-panel toggle-left">
                         <h1>С возвращением!</h1>
                         <p>Введите свои персональные данные, чтобы пользоваться полным функционалом сайта</p>
-                        <button className="hidden" id="login" onClick={SelectLogin}>
+                        <button type="button" className="hidden" id="login" onClick={selectLogin}>
                             Войти
                         </button>
                     </div>
                     <div className="toggle-panel toggle-right">
                         <h1>Привет, друг!</h1>
                         <p>Зарегистрируйтесь, введя свои персональные данные</p>
-                        <button className="hidden" id="register" onClick={SelectRegister}>
+                        <button type="button" className="hidden" id="register" onClick={selectRegister}>
                             Создать
                         </button>
                     </div>

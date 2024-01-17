@@ -1,11 +1,12 @@
 from rest_framework import serializers 
-from .models import Messages, Room, Member, Video 
+from .models import Messages, Room, Member, Video
 from .utils import generate_unique_token
  
 import os, sys 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 from users.serializers import UserSerializer 
- 
+from users.models import User
+
 class RoomSerializer(serializers.ModelSerializer): 
     creator = UserSerializer(read_only=True)
     access_token = serializers.CharField(read_only=True)
@@ -35,13 +36,17 @@ class MessagesSerializer(serializers.ModelSerializer):
         model = Messages 
         fields = '__all__' 
      
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', )
+
 class MembersSerializer(serializers.ModelSerializer): 
-    user = UserSerializer(read_only=True) 
-    room = RoomSerializer(read_only=True) 
+    user = UserNameSerializer(read_only=True)
     class Meta: 
         model = Member 
-        fields = '__all__' 
- 
+        fields = ('user',)
+
  
 class VideoSerializer(serializers.ModelSerializer): 
     room = RoomSerializer(read_only=True) 

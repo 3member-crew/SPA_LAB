@@ -4,9 +4,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
-import client from '../Url';
+import { enc } from 'crypto-js';
+import Base64 from 'crypto-js/enc-base64';
+import createClient from '../Url';
 
-function JoinRoom() {
+
+const JoinRoom = () => {
     const createRoomNameRef = useRef(null);
     const createRoomPasswordRef = useRef(null);
 
@@ -28,41 +31,53 @@ function JoinRoom() {
     async function HandleConnectClick() {
         const roomName = connectRoomNameRef.current.value;
         const roomPassword = connectRoomPasswordRef.current.value;
+
+        const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
+
+        const client = createClient();
+        
         await client.post('v1/rooms/join_room/', {
             name: roomName,
             password: roomPassword
         })
         .then(response => {
-            //navigate(`/room/${response.data.name}`)
-            const room_token = response.data.room_token
-            localStorage.setItem('room_access', room_token)
-            navigate('/home')
-        })
-        .catch(e => {
-            console.log(e['response']['data']['error']);
-
-        })
-    };
-
-    
-    async function HandleCreateClick() {
-        const roomName = createRoomNameRef.current.value;
-        const roomPassword = createRoomPasswordRef.current.value;
-        console.log(roomName, roomPassword)
-        await client.post('v1/rooms/create/', {
-            name: roomName,
-            password: roomPassword
-
-        })
-        .then(response => {
-            //navigate(`/room/${response.data.name}`)
-            const room_token = response.data.room_token
-            localStorage.setItem('room_access', room_token)
-            navigate('/room');
+            const room_token = response.data.room_token;
+            sessionStorage.setItem('room_access', room_token);
+            console.log(`current room token: ${room_token}`);
+            navigate(`/room/${encodedRoomName}`);
+            // navigate('/home')
         })
         .catch(e => {
             const exception = e['response']['data']['error'];
             console.log(exception);
+            // navigate('/');
+        })
+    };
+    
+    async function HandleCreateClick() {
+        const roomName = createRoomNameRef.current.value;
+        const roomPassword = createRoomPasswordRef.current.value;
+
+        const encodedRoomName = Base64.stringify(enc.Utf8.parse(roomName));
+        console.log(encodedRoomName);
+
+        const client = createClient();
+
+        await client.post('v1/rooms/create/', {
+            name: roomName,
+            password: roomPassword
+        })
+        .then(response => {
+            //navigate(`/room/${response.data.name}`)
+            const room_token = response.data.room_token
+            sessionStorage.setItem('room_access', room_token)
+            console.log(`current room token: ${room_token}`);
+            navigate(`/room/${encodedRoomName}`);
+        })
+        .catch(e => {
+            const exception = e['response']['data']['error'];
+            console.log(exception);
+            navigate('/');
         });
 
     };
@@ -77,7 +92,7 @@ function JoinRoom() {
                     </span>
                     <input type="email" placeholder="Комната" ref={createRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={createRoomPasswordRef}></input>
-                    <button onClick={HandleCreateClick}>Создать</button>
+                    <button type="button" onClick={HandleCreateClick}>Создать</button>
                 </form>
             </div>
             <div className="form-container sign-in">
@@ -88,7 +103,7 @@ function JoinRoom() {
                     </span>
                     <input type="email" placeholder="Комната" ref={connectRoomNameRef}></input>
                     <input type="password" placeholder="Пароль" ref={connectRoomPasswordRef}></input>
-                    <button onClick={HandleConnectClick}>Подключиться</button>
+                    <button type="button" onClick={HandleConnectClick}>Подключиться</button>
                 </form>
             </div>
             <div className="toggle-container">
