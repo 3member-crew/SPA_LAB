@@ -105,6 +105,12 @@ class Room extends Component {
         this.getCurrentUser();
     }
 
+    // componentDidUpdate(prevProps, prevState) {
+    //     if (this.mediaPlayerRef.current !== null) {
+    //         this.updateMediaPlayer();
+    //     }
+    // }
+
     componentWillUnmount = async () => {
         if (this.state.isAdmin) {
             await this.sendDisconnectSignal();
@@ -161,6 +167,8 @@ class Room extends Component {
                 const url = response.data.room.url;
 
                 this.setUrl(url);
+
+                this.mediaPlayerRef.current.setState({ isAdmin: isAdmin });
 
                 // console.log(response.data);
 
@@ -309,6 +317,11 @@ class Room extends Component {
             const msg = response.data.message;
         })
     };
+
+    updateMediaPlayer = () => {
+        this.mediaPlayerRef.current.setState({ isAdmin: this.state.isAdmin });
+        this.mediaPlayerRef.current.forceUpdate();
+    }
 
     renderRightSideComponent() {
         const { rightSideItem, messages, userName, users } = this.state;
