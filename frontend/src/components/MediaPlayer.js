@@ -7,13 +7,22 @@ const defaultUrl = 'https://www.youtube.com/watch?v=fgTykFNRbjs';
 class MediaPlayer extends Component {
     constructor(props) {
         super(props);
+
+        const isAdmin = this.props.isAdmin;
+
         this.state = {
             url: defaultUrl,
             currentTime: 0.00,
             isPlaying: false,
-            isAdmin: true,
+            isAdmin: isAdmin,
         };
+
         this.playerRef = React.createRef();
+    }
+
+    checkPlayable = (url) => {
+        const player = ReactPlayer.canPlay(url);
+        return player;
     }
 
     getCurrentTime = () => {
@@ -27,6 +36,12 @@ class MediaPlayer extends Component {
     handleUrlChange = (event) => {
         const newUrl = event.target.value;
         this.setState({ url: newUrl });
+
+        const validUrl = this.checkPlayable(newUrl);
+
+        if (!validUrl) {
+            return;
+        }
 
         if (this.props.onUrlChange) {
             this.props.onUrlChange(newUrl);
@@ -60,7 +75,7 @@ class MediaPlayer extends Component {
 
     seekTo = (time) => {
         const newTime = (time) ? time : this.state.currentTime;
-        
+
         this.setState({ currentTime: newTime }, () => {
             this.playerRef.current.seekTo(this.state.currentTime);
         });
@@ -96,11 +111,11 @@ class MediaPlayer extends Component {
     }
 
     render() {
-        const { url, isPlaying } = this.state;
+        const { url, isPlaying, isAdmin } = this.state;
 
         return (
             <>
-                <div>
+                <div onClick={this.handleClick}>
                     <ReactPlayer
                         ref={this.playerRef}
                         url={url}
@@ -108,12 +123,23 @@ class MediaPlayer extends Component {
                         onPlay={this.handlePlay}
                         onPause={this.handlePause}
                         playing={isPlaying}
-                        controls={true}
+                        controls={isAdmin}
                         onProgress={this.handleProgress}
                         className='media-player'
+                        config={{
+                            youtube: {
+                                playerVars: {
+                                    quality: 'highres',
+                                    fs: 1,
+                                    // disablekb: (isAdmin ? 0 : 1),
+                                    // controls: (isAdmin ? 1 : 0),
+                                    // modestbranding: 1,
+                                }
+                            }
+                        }}
                     />
                 </div>
-                {this.state.isAdmin ? (<input type="text"value={url} onChange={this.handleUrlChange}></input>) : (<></>)}
+                {isAdmin ? (<input type="text" value={url} onChange={this.handleUrlChange}></input>) : (<></>)}
             </>
         );
     }
