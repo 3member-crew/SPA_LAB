@@ -5,9 +5,9 @@ from .serializers import MembersSerializer
 from asgiref.sync import sync_to_async
 from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
-from django.db import transaction
 
-@transaction.atomic
+
+
 @database_sync_to_async
 def updateRoomVideo(room, url):
     try:

@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+
+    container_name: postgres
+
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    env_file:
+      - /backend/.env
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    
+    ports:
+      - 3000:3000
+
+volumes:
+  pgdbdata: null
