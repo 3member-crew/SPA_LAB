@@ -1,9 +1,13 @@
-FROM python:3.11-slim-bullseye
+FROM python:3.11.7-slim
 
-WORKDIR /srv/app
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+
+WORKDIR /backend 
+
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
@@ -11,8 +15,8 @@ COPY ./requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY ./entrypoint.sh .
-
 COPY . .
 
-ENTRYPOINT [ "/srv/app/entrypoint.sh" ]
+EXPOSE 8000
+
+

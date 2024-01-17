@@ -7,15 +7,6 @@ from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
 
 
-@database_sync_to_async
-def get_user(self, query_string):
-    token_key = query_string.decode().split("=")[1]
-    try:
-        token = Token.objects.get(key=token_key)
-        return token.user
-    except Token.DoesNotExist:
-        return None
-
 
 @database_sync_to_async
 def updateRoomVideo(room, url):
