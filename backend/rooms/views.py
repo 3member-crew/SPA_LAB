@@ -59,35 +59,35 @@ class RoomView(ViewSet):
             return Response({'error': 'Room not found'}, status=404)
         
 
-# class VideoView(ViewSet): 
-#     serializer_class = VideoSerializer 
+class VideoView(ViewSet): 
+    serializer_class = VideoSerializer 
  
-#     def get_video(self, request): 
-#         room_id = request.query_params.get('room_id') 
-#         video_url = request.query_params.get('video_url') 
+    def get_video(self, request): 
+        room_id = request.query_params.get('room_id') 
+        video_url = request.query_params.get('video_url') 
  
-#         video = Video.objects.filter(room_id=room_id, video_url=video_url).first() 
-#         if video: 
-#             serializer = VideoSerializer(video) 
-#             return Response(serializer.data) 
-#         else: 
-#             return Response({'error': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
+        video = Video.objects.filter(room_id=room_id, video_url=video_url).first() 
+        if video: 
+            serializer = VideoSerializer(video) 
+            return Response(serializer.data) 
+        else: 
+            return Response({'error': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
  
-#     def get_all_video(self, request): 
-#         room_id = request.data.get('room_id') 
+    def get_all_video(self, request): 
+        room_id = request.data.get('room_id') 
  
-#         videos = Video.objects.filter(room_id=room_id) 
-#         serializer = VideoSerializer(videos, many=True) 
-#         return Response(serializer.data) 
+        videos = Video.objects.filter(room_id=room_id) 
+        serializer = VideoSerializer(videos, many=True) 
+        return Response(serializer.data) 
  
-#     def add_video(self, request): 
-#         room_id = request.data.get('room_id') 
-#         video_url = request.data.get('video_url') 
+    def add_video(self, request): 
+        room_id = request.data.get('room_id') 
+        video_url = request.data.get('video_url') 
  
-#         room = Room.objects.get(id=room_id) 
-#         video = Video.objects.create(room=room, video_url=video_url) 
-#         serializer = VideoSerializer(video) 
-#         return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        room = Room.objects.get(id=room_id) 
+        video = Video.objects.create(room=room, video_url=video_url) 
+        serializer = VideoSerializer(video) 
+        return Response(serializer.data, status=status.HTTP_201_CREATED) 
      
  
 class MemberView(ViewSet): 

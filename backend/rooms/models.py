@@ -1,6 +1,6 @@
 from collections.abc import Iterable 
 from django.db import models 
-from .utils import create_jwt_token, generate_unique_token
+from .utils import generate_unique_token
 
 DEFAULT_URL = "https://www.youtube.com/watch?v=fgTykFNRbjs"
 
