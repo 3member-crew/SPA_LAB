@@ -6,9 +6,12 @@ import PlayList from '../components/Playlist';
 import Switcher from '../components/Switcher';
 import withRouter from '../components/withRouter';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-import { decode } from "base-64";
-import client from "../Url";
+import { enc } from 'crypto-js';
+import Base64 from 'crypto-js/enc-base64';
+import createClient from "../Url";
 import "../App.css";
+
+import Header from '../components/Header.js';
 
 
 class Room extends Component {
@@ -21,6 +24,7 @@ class Room extends Component {
             rightSideItem: "chat",
             messages: [],
             users: [],
+            videoState: false,
         }
 
         this.chatRef = React.createRef();
@@ -29,14 +33,12 @@ class Room extends Component {
 
         const roomName = this.getRoomName();
 
-        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/${roomName}/?token=${localStorage.getItem('token')}`);
+        this.client = new W3CWebSocket(`ws://127.0.0.1:8000/ws/room/${roomName}/?token=${sessionStorage.getItem('token')}`);
     }
 
     componentDidMount = () => {
         this.client.onopen = () => {
             console.log('WebSocket Client Connected');
-
-
         };
 
         this.client.onmessage = (message) => {
@@ -55,7 +57,6 @@ class Room extends Component {
             }
             if (signal === 'url_change') {
                 const newUrl = dataFromServer.new_url;
-                console.log(newUrl)
                 this.setUrl(newUrl);
             }
             if (signal === 'chat') {
@@ -76,9 +77,26 @@ class Room extends Component {
 
                 this.setState({ users: users });
             }
+            if (signal === "get_room_state") {
+                if (this.state.isAdmin) {
+                    this.sendRoomState();
+                }
+            }
             if (signal === "room_state") {
-                const currentTime = dataFromServer.currentTime;
-                const currentVideoState = dataFromServer.currentVideoState;
+                if (!this.state.isAdmin) {
+                    const currentTime = dataFromServer.currentTime;
+                    const currentVideoState = dataFromServer.currentVideoState;
+
+                    console.log(`curTime: ${currentTime}`, `curVideoState: ${currentVideoState}`);
+
+                    if (currentVideoState) {
+                        this.setPlay(currentTime);
+                    }
+                }
+            }
+            if (signal === "disconnect") {
+                console.log("disconnect received");
+                this.redirectHome();
             }
         }
 
@@ -87,8 +105,52 @@ class Room extends Component {
         this.getCurrentUser();
     }
 
+    componentWillUnmount = async () => {
+        if (this.state.isAdmin) {
+            await this.sendDisconnectSignal();
+        }
+
+        const client = createClient();
+
+        const roomName = this.state.room.name;
+
+        await client.delete("/v1/rooms/leave/", {
+            params: { name: roomName }
+        })
+            .then(response => {
+                const msg = response.data.message;
+            })
+            .catch(e => {
+                const exception = e['response']['data']['message'];
+                console.log(exception);
+            });
+    }
+
+    sendRoomState = () => {
+        if (this.state.isAdmin) {
+            const currentVideoState = this.state.videoState;
+            let currentTime = 0.00;
+
+            if (this.mediaPlayerRef.current) {
+                currentTime = this.mediaPlayerRef.current.getCurrentTime();
+            }
+
+            // console.log(`send playing state = ${currentVideoState}`);
+
+            this.client.send(JSON.stringify({
+                signal: "room_state",
+                current_time: currentTime,
+                current_video_state: currentVideoState,
+            }));
+        }
+    }
+
     getRoom = async () => {
         const roomName = this.getRoomName();
+
+        console.log(roomName);
+
+        const client = createClient();
 
         await client.get("/v1/rooms/get/", {
             params: { name: roomName }
@@ -114,6 +176,8 @@ class Room extends Component {
     }
 
     getCurrentUser = async () => {
+        const client = createClient();
+
         await client.get("/auth/profile/")
             .then(response => {
                 const userName = response.data.username;
@@ -131,7 +195,7 @@ class Room extends Component {
         const path = location.pathname;
         const parts = path.split('/');
         const encodedRoomName = parts[parts.length - 1];
-        const roomName = decode(encodedRoomName); // Decode the encoded room name
+        const roomName = enc.Utf8.stringify(Base64.parse(encodedRoomName));
 
         return roomName;
     }
@@ -140,6 +204,8 @@ class Room extends Component {
         if (!this.state.isAdmin) {
             return;
         }
+
+        this.setState({ videoState: false });
 
         console.log("pause");
 
@@ -152,6 +218,8 @@ class Room extends Component {
         if (!this.state.isAdmin) {
             return;
         }
+
+        this.setState({ videoState: true });
 
         console.log("play");
 
@@ -227,9 +295,11 @@ class Room extends Component {
         }
     };
 
-    handleHomeClick = async () => {
+    handleHomeClick = async () => { // button ne sush
         console.log("Home button clicked");
         const { roomName } = this.state.room.name;
+
+        const client = createClient();
 
         await client.delete("/v1/rooms/leave/", {
             params: {
@@ -238,7 +308,6 @@ class Room extends Component {
         }).then(response => {
             const msg = response.data.message;
         })
-
     };
 
     renderRightSideComponent() {
@@ -270,8 +339,20 @@ class Room extends Component {
         }
     }
 
+    sendDisconnectSignal = async () => {
+        await this.client.send(JSON.stringify({
+            signal: "disconnect",
+        }));
+    }
+
+    redirectHome = async () => {
+        const { navigate } = this.props.router;
+
+        navigate("../");
+    }
+
     requireAuth = (nextState, replace, next) => {
-        if (!localStorage.getItem('token')) {
+        if (!sessionStorage.getItem('token')) {
             replace({
                 pathname: "/login",
                 state: { nextPathname: nextState.location.pathname }
@@ -281,24 +362,23 @@ class Room extends Component {
         next();
     }
 
+
     render() {
         return (
-            <div className="room-container">
-                <div className="left-side-container">
-                    <span>
-                        <button onClick={this.handleHomeClick}>На главную</button>
-                        <div>
-                            {this.state.room.name}
-                        </div>
-                    </span>
-                    <MediaPlayer
-                        ref={this.mediaPlayerRef}
-                        onPlay={this.handlePlay}
-                        onPause={this.handlePause}
-                        onUrlChange={this.handleUrlChange}
-                    />
+            <div className='room-container'>
+                <Header roomName={this.state.room.name} />
+                <div className='left-side-container'>
+                    <div className='player'>
+                        <MediaPlayer
+                            ref={this.mediaPlayerRef}
+                            onPlay={this.handlePlay}
+                            onPause={this.handlePause}
+                            onUrlChange={this.handleUrlChange}
+                            isAdmin={this.state.isAdmin}
+                        />
+                    </div>
                 </div>
-                <div className="right-side-container">
+                <div className='right-side-container'>
                     <Switcher onChange={this.handleSwitcherChange} />
                     {this.renderRightSideComponent()}
                 </div>

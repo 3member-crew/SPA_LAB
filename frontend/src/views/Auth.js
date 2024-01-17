@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import client from '../Url';
+import createClient from '../Url';
 
 function Auth() {
     const navigate = useNavigate(); 
@@ -27,18 +27,24 @@ function Auth() {
     };
     
     async function handleLoginClick() { 
+        const client = createClient();
+
         const response = await client.post('/auth/login/', {
             username: loginUsernameRef.current.value,
             password: loginPasswordRef.current.value,
         })
         
         const token = response.data.token;
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };
     
     async function handleRegisterClick() {
+        const client = createClient();
+
         const response = await client.post('/auth/register/', {
             username: regUsernameRef.current.value,
             email: regEmailRef.current.value,
@@ -47,7 +53,9 @@ function Auth() {
         
         const token = response.data.token;
         
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
+
+        console.log(`current user token: ${token}`);
 
         navigate('../');
     };

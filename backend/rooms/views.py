@@ -22,6 +22,7 @@ class RoomView(ViewSet):
     def get_room(self, request):
 
         room_name = request.query_params.get('name')
+        print(room_name)
 
         if Room.objects.filter(name=room_name).exists() == False:
             return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
@@ -129,6 +130,9 @@ class MemberView(ViewSet):
 
         room_name = request.query_params.get('name') 
         #user_id = request.query_params.get('user_id') 
+
+        if Room.objects.filter(name=room_name).exists() == False:
+            return Response({'message': 'room was deleted'}, status=status.HTTP_200_OK)
 
  
         room = Room.objects.get(name=room_name)  

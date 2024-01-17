@@ -29,7 +29,7 @@ function Home() {
                     просмотра видео
                 </div>
                 <div id="room-creation-wrap">
-                    {localStorage.getItem('token') !== null || localStorage.getItem('token') !== undefined ? (
+                    {sessionStorage.getItem('token') ? (
                         <button onClick={handleRoomCreateClick}>
                             Создать комнату
                         </button>

@@ -17,6 +17,16 @@ def get_user(self, query_string):
         return None
 
 
+@database_sync_to_async
+def updateRoomVideo(room, url):
+    try:
+        room.url = url
+        room.save()
+        return room
+    except Room.DoesNotExist:
+        return None
+
+
 class RoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
@@ -38,12 +48,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
 
             if self.creator != self.user:
+                print("new member")
                 await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "handleNewMember",
-                },
-            )
+                    self.room_group_name,
+                    {
+                        "type": "handleNewMember",
+                    },
+                )
 
         else:
             await self.close()
@@ -107,7 +118,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         is_admin = self.user == self.creator
 
         print(text_data_json)
-        is_admin = True
 
         if signal == "play":
             current_time = text_data_json["currentTime"]
@@ -144,7 +154,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             )
         if is_admin and signal == "disconnect":
-            self.close_all_connections
+            await self.close_all_connections()
         elif signal == "disconnect":
             self.close()
 
@@ -161,8 +171,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "sender": sender,
                 },
             )
-        
+
         if signal == "room_state":
+            print("room state signal")
             current_time = text_data_json["current_time"]
             current_video_state = text_data_json["current_video_state"]
 
@@ -202,6 +213,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps({"signal": signal, "new_url": url}))
 
+        await updateRoomVideo(self.room, url)
+
     async def handlePause(self, event):
         signal = event["signal"]
         is_admin = event["is_admin"]
@@ -234,6 +247,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def handleNewMember(self, event):
+        print("handle new member")
         await self.send(
             text_data=json.dumps(
                 {
@@ -248,16 +262,19 @@ class RoomConsumer(AsyncWebsocketConsumer):
         signal = event["signal"]
 
         await self.send(
-            text_data=json.dumps({
-                "signal": signal, 
-                "currentTime": current_time,
-                "currentVideoState": current_video_state,
-            })
+            text_data=json.dumps(
+                {
+                    "signal": signal,
+                    "currentTime": current_time,
+                    "currentVideoState": current_video_state,
+                }
+            )
         )
 
     # Connection close
 
     async def close_all_connections(self):
+        print("close all connections")
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -266,4 +283,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def close_connections(self, event):
-        await self.close()
+        if self.user != self.creator:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "signal": "disconnect",
+                    }
+                )
+            )
+
+            await self.close()
+
+            print("idk")
+            
