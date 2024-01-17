@@ -139,7 +139,10 @@ class MediaPlayer extends Component {
                         }}
                     />
                 </div>
-                {isAdmin ? (<input type="text" value={url} onChange={this.handleUrlChange}></input>) : (<></>)}
+                {isAdmin ? (
+                    <input type="text" value={'https://www.youtube.com/watch?v=K8nuz6z90cQ'} onChange={this.handleUrlChange} style={{fontSize: '30px', marginTop: '10px', border: '2px solid #512da8', borderRadius: '10px'}} />) : (
+                    <></>
+                )}
             </>
         );
     }

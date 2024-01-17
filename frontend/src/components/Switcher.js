@@ -46,6 +46,7 @@ class Switcher extends Component {
                 onChange={this.onChange}
                 ref={(ref) => (this.selectRef = ref)}
                 className="switcher-container"
+                style={{border: '2px solid #512da8', borderRadius: '10px'}}
             />
         );
     }
