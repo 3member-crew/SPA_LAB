@@ -65,6 +65,7 @@ function Auth() {
             <div className="form-container sign-up">
                 <form>
                     <h1>Создайте аккаунт</h1>
+                    {/*
                     <div className="social-icons">
                         <a href="#" className="icon">
                             <FontAwesomeIcon icon={faVk} />
@@ -73,10 +74,12 @@ function Auth() {
                             <FontAwesomeIcon icon={faGoogle} />
                         </a>
                     </div>
+                    
                     <span>
                         или используйте Email для регистрации
                     </span>
-                    <input type="email" placeholder="Имя" ref={regUsernameRef}></input>
+                    */}
+                    <input type="username" placeholder="Имя" ref={regUsernameRef}></input>
                     <input type="email" placeholder="Email" ref={regEmailRef}></input>
                     <input type="password" placeholder="Пароль" ref={regPasswordRef}></input>
                     <button onClick={handleRegisterClick}>Создать</button>
@@ -85,6 +88,7 @@ function Auth() {
             <div className="form-container sign-in">
                 <form>
                     <h1>Войти в аккаунт</h1>
+                    {/*
                     <div className="social-icons">
                         <a href="#" className="icon">
                             <FontAwesomeIcon icon={faVk} />
@@ -96,9 +100,10 @@ function Auth() {
                     <span>
                         или используйте Email и пароль
                     </span>
-                    <input type="email" placeholder="Логин" ref={loginUsernameRef}></input>
+                    */}
+                    <input type="email" placeholder="Email" ref={loginUsernameRef}></input>
                     <input type="password" placeholder="Пароль" ref={loginPasswordRef}></input>
-                    <a href="#">Забыли пароль?</a>
+                    {/*<a href="#">Забыли пароль?</a>*/}
                     <button onClick={handleLoginClick}>
                         Войти
                     </button>
