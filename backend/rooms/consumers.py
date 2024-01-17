@@ -5,18 +5,9 @@ from .serializers import MembersSerializer
 from asgiref.sync import sync_to_async
 from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
+from django.db import transaction
 
-
-@database_sync_to_async
-def get_user(self, query_string):
-    token_key = query_string.decode().split("=")[1]
-    try:
-        token = Token.objects.get(key=token_key)
-        return token.user
-    except Token.DoesNotExist:
-        return None
-
-
+@transaction.atomic
 @database_sync_to_async
 def updateRoomVideo(room, url):
     try:
@@ -48,13 +39,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
 
             if self.creator != self.user:
-                print("new member")
                 await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "handleNewMember",
-                    },
-                )
+                self.room_group_name,
+                {
+                    "type": "handleNewMember",
+                },
+            )
 
         else:
             await self.close()
@@ -93,12 +83,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         print(self.user)
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "handleGetMembers",
-            },
-        )
+        if self.creator == self.user:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "disconnectAll"
+                }
+            )
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "handleGetMembers",
+                },
+            )
 
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
@@ -118,6 +116,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         is_admin = self.user == self.creator
 
         print(text_data_json)
+        is_admin = True
 
         if signal == "play":
             current_time = text_data_json["currentTime"]
@@ -154,7 +153,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             )
         if is_admin and signal == "disconnect":
-            await self.close_all_connections()
+            self.close_all_connections
         elif signal == "disconnect":
             self.close()
 
@@ -171,9 +170,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "sender": sender,
                 },
             )
-
+        
         if signal == "room_state":
-            print("room state signal")
             current_time = text_data_json["current_time"]
             current_video_state = text_data_json["current_video_state"]
 
@@ -247,7 +245,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def handleNewMember(self, event):
-        print("handle new member")
         await self.send(
             text_data=json.dumps(
                 {
@@ -262,19 +259,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
         signal = event["signal"]
 
         await self.send(
-            text_data=json.dumps(
-                {
-                    "signal": signal,
-                    "currentTime": current_time,
-                    "currentVideoState": current_video_state,
-                }
-            )
+            text_data=json.dumps({
+                "signal": signal, 
+                "currentTime": current_time,
+                "currentVideoState": current_video_state,
+            })
         )
 
     # Connection close
 
     async def close_all_connections(self):
-        print("close all connections")
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -283,16 +277,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def close_connections(self, event):
-        if self.user != self.creator:
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "signal": "disconnect",
-                    }
-                )
-            )
+        await self.close()
 
-            await self.close()
 
-            print("idk")
-            

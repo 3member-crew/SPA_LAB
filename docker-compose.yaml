@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    env_file:
+      - /backend/.env
+
+  frontend:
+    build:
+      context: ./frontend
+    
+    ports:
+      - 3000:3000
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: watch_together
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: superadmin
