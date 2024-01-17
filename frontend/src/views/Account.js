@@ -9,7 +9,7 @@ function AccountPage() {
     const navigate = useNavigate();
 
     async function HandleLogout() {
-        await axios.post('http://127.0.0.1:8000/api/auth/logout');
+        //await axios.post('http://127.0.0.1:8000/api/auth/logout');
         sessionStorage.clear();
         navigate('../');
     }

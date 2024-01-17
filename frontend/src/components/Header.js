@@ -23,36 +23,33 @@ function Header({ roomName }) {
 
     return (
         <div id="nav-wrap">
-            <div id="header-wrap">
-                <div id="logo">
-                    <button onClick={HandleHomeClick}>W<span style={{ position: 'relative', top: '20px', }}>3</span>G</button>
-                </div>
-                <div id="navbar">
-                    <button onClick={HandleHomeClick}>
-                        <FontAwesomeIcon icon={faHome} size='50px' />
-                    </button>
-                    {room ? (
-                        <div className='room-name-view'>
-                            {room}
-                        </div>
+            <div id="logo">
+                <button onClick={HandleHomeClick}>W<span style={{ position: 'relative', top: '20px', }}>3</span>G</button>
+            </div>
+            <div id="navbar">
+                {room ? (
+                    <div style={{display: 'flex', alignItems: 'center', color: '#fff', marginRight: '20px', fontSize: '20px'}}>
+                        Вы подключены к комнате: {room}
+                    </div>
+                )
+                    :
+                    (
+                        <></>
                     )
-                        :
-                        (
-                            <></>
-                        )
 
-                    }
-                    {sessionStorage.getItem('token') ? (
-                        <button onClick={HandleUserClick}>
-                            <FontAwesomeIcon icon={faUser} />
-                        </button>
-                    ) : (
-                        <button onClick={HandleLoginRegClick}>
-                            Войти или зарегистрироваться
-                        </button>
-                    )
-                    }
-                </div>
+                }
+                <button onClick={HandleHomeClick}>
+                    <FontAwesomeIcon icon={faHome} />
+                </button>
+                {sessionStorage.getItem('token') ? (
+                    <button onClick={HandleUserClick}>
+                        <FontAwesomeIcon icon={faUser} />
+                    </button>
+                ) : (
+                    <button onClick={HandleLoginRegClick}>
+                        Войти или зарегистрироваться
+                    </button>
+                )}
             </div>
         </div>
     )

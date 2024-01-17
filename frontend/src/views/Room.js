@@ -20,7 +20,7 @@ class Room extends Component {
         this.state = {
             room: {},
             userName: "",
-            isAdmin: false,
+            isAdmin: true,
             rightSideItem: "chat",
             messages: [],
             users: [],
@@ -105,6 +105,12 @@ class Room extends Component {
         this.getCurrentUser();
     }
 
+    // componentDidUpdate(prevProps, prevState) {
+    //     if (this.mediaPlayerRef.current !== null) {
+    //         this.updateMediaPlayer();
+    //     }
+    // }
+
     componentWillUnmount = async () => {
         if (this.state.isAdmin) {
             await this.sendDisconnectSignal();
@@ -161,6 +167,8 @@ class Room extends Component {
                 const url = response.data.room.url;
 
                 this.setUrl(url);
+
+                this.mediaPlayerRef.current.setState({ isAdmin: isAdmin });
 
                 // console.log(response.data);
 
@@ -310,8 +318,13 @@ class Room extends Component {
         })
     };
 
+    updateMediaPlayer = () => {
+        this.mediaPlayerRef.current.setState({ isAdmin: this.state.isAdmin });
+        this.mediaPlayerRef.current.forceUpdate();
+    }
+
     renderRightSideComponent() {
-        const { rightSideItem, messages, userName, users } = this.state;
+        const { rightSideItem, messages, userName, users, isAdmin } = this.state;
 
         switch (rightSideItem) {
             case "chat":
@@ -322,8 +335,9 @@ class Room extends Component {
                         userName={userName}
                         onSendMessage={this.handleSendMessage}
                         key={userName}
+                        isAdmin={isAdmin}
                     />
-                );
+            );
             case "playlist":
                 return <PlayList />;
             case "userlist":
@@ -367,7 +381,7 @@ class Room extends Component {
         return (
             <div className='room-container'>
                 <Header roomName={this.state.room.name} />
-                <div className='left-side-container'>
+                <div className='main-content-wrap'>
                     <div className='player'>
                         <MediaPlayer
                             ref={this.mediaPlayerRef}
@@ -377,10 +391,12 @@ class Room extends Component {
                             isAdmin={this.state.isAdmin}
                         />
                     </div>
-                </div>
-                <div className='right-side-container'>
-                    <Switcher onChange={this.handleSwitcherChange} />
-                    {this.renderRightSideComponent()}
+                    <div id='chat-wrap'>
+                        <div id='switcher-wrap'>
+                            <Switcher onChange={this.handleSwitcherChange} /> 
+                        </div>
+                        {this.renderRightSideComponent()}
+                    </div>
                 </div>
             </div >
         );

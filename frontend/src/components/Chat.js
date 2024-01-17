@@ -2,6 +2,8 @@ import "react-chat-elements/dist/main.css";
 import { MessageList, Input, Button } from "react-chat-elements";
 import React, { Component } from 'react';
 import "../App.css";
+import "./MediaPlayer";
+import MediaPlayer from "./MediaPlayer";
 
 
 const currentDate = () => {
@@ -13,10 +15,12 @@ class Chat extends Component {
         super(props);
         const messages = this.props.messages ? this.props.messages : [];
         const userName = this.props.userName ? this.props.userName : "";
+        const isAdmin = this.props.isAdmin ? this.props.isAdmin : "";
 
         this.state = {
             messages: messages,
             userName: userName,
+            isAdmin: isAdmin,
         };
 
         this.chatInputRef = React.createRef();
@@ -79,6 +83,8 @@ class Chat extends Component {
     }
 
     render() {
+        const { isAdmin } = this.state;
+
         return (
             <div className="chat-container-inner">
                 <div className="chat-messages-container">
@@ -102,6 +108,7 @@ class Chat extends Component {
                                 text={"Отправить"}
                                 onClick={this.onSendMessageClick}
                                 title="Send"
+                                backgroundColor="#512da8"
                             />
                         }
                     />
