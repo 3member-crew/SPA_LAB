@@ -12,7 +12,7 @@ import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 from users.serializers import UserSerializer 
 from users.models import User 
- 
+from django.db import transaction
 
 class RoomView(ViewSet):
     queryset = Room.objects.all()
@@ -103,7 +103,7 @@ class MemberView(ViewSet):
         serializer = MembersSerializer(members, many=True) 
         return Response(serializer.data) 
  
-
+    @transaction.atomic
     def join_room(self, request): 
         
         room_name = request.data.get('name')
@@ -113,17 +113,23 @@ class MemberView(ViewSet):
             return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
         
         room = Room.objects.get(name=room_name)
-        user = request.user 
+        user = request.user
+        access_token = request.headers.get('room_token')
+    
 
         member, created = Member.objects.get_or_create(room=room, user=user)
-        if password:
-            if created:
+        if password and member:
+            if access_token == room.access_token:
+                return Response({'success': 'connect'}, status=status.HTTP_200_OK)
+            else:
+                access_token = room.access_token
+                return Response ({'room_token': access_token}, status=status.HTTP_200_OK)
+            
+        if password and created:
                 token = room.access_token 
-                return Response({'room_token': token}, status=status.HTTP_201_CREATED) 
-            else: 
-                return Response({'error': 'Пользователь уже присутствует в комнате'}, status=status.HTTP_400_BAD_REQUEST)
-             
-        return Response({'error': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'room_token': token}, status=status.HTTP_201_CREATED)                
+        else:        
+            return Response({'error': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
     
 
     def remove_member(self, request):
@@ -133,7 +139,6 @@ class MemberView(ViewSet):
 
         if Room.objects.filter(name=room_name).exists() == False:
             return Response({'message': 'room was deleted'}, status=status.HTTP_200_OK)
-
  
         room = Room.objects.get(name=room_name)  
         #user = User.objects.get(id=user_id) 

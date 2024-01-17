@@ -1,0 +1,9 @@
+version: '1'
+services:
+  backend:
+  
+  frontend:
+
+
+  postgre:
+  
