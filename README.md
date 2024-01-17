@@ -7,13 +7,13 @@ Simple web site to watch together youtube.
 -react \
 -postgresql \
 -websockets \
--docker \
+-docker 
 
 ## Django
 -auth api \
--room api \
+-room api 
 
 ## React
 auth page \
 room create page \
-room page \
+room page 
