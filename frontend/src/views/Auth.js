@@ -113,7 +113,7 @@ function Auth() {
                     <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
                     <input type="password" placeholder="Пароль" onChange={(e) => setPass(e.target.value)} />
                     {/*<a href="#">Забыли пароль?</a>*/}
-                    <button>Войти</button>
+                    <button>Зарегистрироваться</button>
                 </form>
             </div>
             {renderLoginForm}
