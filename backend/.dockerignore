@@ -1,6 +1,11 @@
 # Python
 __pycache__/
 *.py[cod]
+env
 venv
 
+# Django 
+db.sqlite3
 
+# Docker 
+Dockerfile
