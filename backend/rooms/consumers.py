@@ -8,16 +8,6 @@ from channels.db import database_sync_to_async
 
 
 @database_sync_to_async
-def get_user(self, query_string):
-    token_key = query_string.decode().split("=")[1]
-    try:
-        token = Token.objects.get(key=token_key)
-        return token.user
-    except Token.DoesNotExist:
-        return None
-
-
-@database_sync_to_async
 def updateRoomVideo(room, url):
     try:
         room.url = url
@@ -34,18 +24,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.user = await self.get_user(self.scope["query_string"])
         self.room = await self.get_room(self.room_name)
 
-        await self.get_members()
         if self.user is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
             await self.accept()
-
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "handleGetMembers",
-                },
-            )
 
             if self.creator != self.user:
                 print("new member")
@@ -55,6 +37,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "type": "handleNewMember",
                     },
                 )
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "handleGetMembers",
+                },
+            )
 
         else:
             await self.close()
@@ -89,10 +78,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             # return serializer.data
             return user_list
         except:
-            print("Нет мемберов")
+            print("Нет мемберов или комната удалена")
 
     async def disconnect(self, close_code):
-        print(self.user)
+        print("disconnected - ", self.user)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -117,7 +106,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         is_admin = self.user == self.creator
 
-        print(text_data_json)
 
         if signal == "play":
             current_time = text_data_json["currentTime"]
@@ -156,7 +144,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if is_admin and signal == "disconnect":
             await self.close_all_connections()
         elif signal == "disconnect":
-            self.close()
+            pass
 
         if signal == "chat":
             text = text_data_json["text"]
@@ -173,7 +161,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
 
         if signal == "room_state":
-            print("room state signal")
+
             current_time = text_data_json["current_time"]
             current_video_state = text_data_json["current_video_state"]
 
@@ -191,18 +179,19 @@ class RoomConsumer(AsyncWebsocketConsumer):
         members = self.get_members()
 
         await self.send(
-            text_data=json.dumps({"signal": "user_list", "members": await members})
+            text_data=json.dumps({
+                "signal": "user_list",
+                  "members": await members
+                  })
         )
 
     # Video handlers
     async def handlePlay(self, event):
-        print("check")
         signal = event["signal"]
         is_admin = event["is_admin"]
         current_time = event["currentTime"]
 
         if is_admin:
-            print("play")
             await self.send(
                 text_data=json.dumps({"signal": signal, "currentTime": current_time})
             )
@@ -220,7 +209,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         is_admin = event["is_admin"]
 
         if is_admin:
-            print("pause")
             await self.send(
                 text_data=json.dumps(
                     {
@@ -247,7 +235,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def handleNewMember(self, event):
-        print("handle new member")
         await self.send(
             text_data=json.dumps(
                 {
@@ -274,7 +261,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
     # Connection close
 
     async def close_all_connections(self):
-        print("close all connections")
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -294,5 +280,4 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             await self.close()
 
-            print("idk")
             

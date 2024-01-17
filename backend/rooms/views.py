@@ -22,7 +22,7 @@ class RoomView(ViewSet):
     def get_room(self, request):
 
         room_name = request.query_params.get('name')
-        print(room_name)
+
 
         if Room.objects.filter(name=room_name).exists() == False:
             return Response(data={'error' : 'bad room name'}, status=status.HTTP_400_BAD_REQUEST)
@@ -34,7 +34,6 @@ class RoomView(ViewSet):
         return Response({'room': serializer.data, 'isAdmin': is_admin}, status=status.HTTP_201_CREATED)
      
     def create_room(self, request):
-        print(request.data)
         serializer = RoomSerializer(data=request.data, context={'request': request}) 
 
         if serializer.is_valid():
@@ -51,7 +50,6 @@ class RoomView(ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
      
     def delete_room(self, request):
-        print(request)
         room_id = request.query_params.get('name') 
         try: 
             room = Room.objects.get(name=room_id) 
@@ -61,35 +59,35 @@ class RoomView(ViewSet):
             return Response({'error': 'Room not found'}, status=404)
         
 
-class VideoView(ViewSet): 
-    serializer_class = VideoSerializer 
+# class VideoView(ViewSet): 
+#     serializer_class = VideoSerializer 
  
-    def get_video(self, request): 
-        room_id = request.query_params.get('room_id') 
-        video_url = request.query_params.get('video_url') 
+#     def get_video(self, request): 
+#         room_id = request.query_params.get('room_id') 
+#         video_url = request.query_params.get('video_url') 
  
-        video = Video.objects.filter(room_id=room_id, video_url=video_url).first() 
-        if video: 
-            serializer = VideoSerializer(video) 
-            return Response(serializer.data) 
-        else: 
-            return Response({'error': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
+#         video = Video.objects.filter(room_id=room_id, video_url=video_url).first() 
+#         if video: 
+#             serializer = VideoSerializer(video) 
+#             return Response(serializer.data) 
+#         else: 
+#             return Response({'error': 'Видео не найдено'}, status=status.HTTP_404_NOT_FOUND) 
  
-    def get_all_video(self, request): 
-        room_id = request.data.get('room_id') 
+#     def get_all_video(self, request): 
+#         room_id = request.data.get('room_id') 
  
-        videos = Video.objects.filter(room_id=room_id) 
-        serializer = VideoSerializer(videos, many=True) 
-        return Response(serializer.data) 
+#         videos = Video.objects.filter(room_id=room_id) 
+#         serializer = VideoSerializer(videos, many=True) 
+#         return Response(serializer.data) 
  
-    def add_video(self, request): 
-        room_id = request.data.get('room_id') 
-        video_url = request.data.get('video_url') 
+#     def add_video(self, request): 
+#         room_id = request.data.get('room_id') 
+#         video_url = request.data.get('video_url') 
  
-        room = Room.objects.get(id=room_id) 
-        video = Video.objects.create(room=room, video_url=video_url) 
-        serializer = VideoSerializer(video) 
-        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+#         room = Room.objects.get(id=room_id) 
+#         video = Video.objects.create(room=room, video_url=video_url) 
+#         serializer = VideoSerializer(video) 
+#         return Response(serializer.data, status=status.HTTP_201_CREATED) 
      
  
 class MemberView(ViewSet): 
@@ -120,8 +118,8 @@ class MemberView(ViewSet):
             if created:
                 token = room.access_token 
                 return Response({'room_token': token}, status=status.HTTP_201_CREATED) 
-            else: 
-                return Response({'error': 'Пользователь уже присутствует в комнате'}, status=status.HTTP_400_BAD_REQUEST)
+            if member:
+                return Response({'message': 'Пользователь уже присутствует в комнате'}, status=status.HTTP_200_OK)
              
         return Response({'error': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -138,7 +136,7 @@ class MemberView(ViewSet):
         room = Room.objects.get(name=room_name)  
         #user = User.objects.get(id=user_id) 
         user = request.user 
- 
+    
         member = Member.objects.filter(room=room, user=user) 
         if member.exists(): 
             member.delete() 
@@ -154,7 +152,6 @@ class MemberView(ViewSet):
         room_name = request.data.get('room_name') 
  
         room = Room.objects.get(id=room_name) 
-        #room.members.all().delete() 
         room.delete() 
         return Response({'message': 'Все пользователи удалены из комнаты'}, status=status.HTTP_200_OK)
     
