@@ -8,14 +8,7 @@ import createClient from '../Url';
 
 function Auth() {
     const navigate = useNavigate(); 
-
-    const regUsernameRef = useRef(null);
-    const regEmailRef = useRef(null);
-    const regPasswordRef = useRef(null);
-
-    const loginUsernameRef = useRef(null);
-    const loginPasswordRef = useRef(null);
-
+    
     const [user, setUser] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
@@ -65,77 +58,75 @@ function Auth() {
         })
     };
 
-    const renderLoginForm = (
-        <div className="form-container sign-in">
-                <form onSubmit={handleLoginClick}>
-                    <h1>Войти в аккаунт</h1>
-                    {/*
-                    <div className="social-icons">
-                        <a href="#" className="icon">
-                            <FontAwesomeIcon icon={faVk} />
-                        </a>
-                        <a href="#" className="icon">
-                            <FontAwesomeIcon icon={faGoogle} />
-                        </a>
-                    </div>
-                    <span>
-                        или используйте Email и пароль
-                    </span>
-                    */}
-                    <input type="text" placeholder="Имя" onChange={(e) => setUser(e.target.value)} />
-                    <input type="password" placeholder="Пароль" onChange={(e) => setPass(e.target.value)} />
-                    {/*<a href="#">Забыли пароль?</a>*/}
-                    <button>Войти</button>
-                </form>
-            </div>
-    )
-
     return (
-        <div className="container" id="container">
-            <div className="form-container sign-up">
-                <form onSubmit={handleRegisterClick}>
-                    <h1>Создайте аккаунт</h1>
-                    {/*
-                    <div className="social-icons">
-                        <a href="#" className="icon">
-                            <FontAwesomeIcon icon={faVk} />
-                        </a>
-                        <a href="#" className="icon">
-                            <FontAwesomeIcon icon={faGoogle} />
-                        </a>
-                    </div>
-                    
-                    <span>
-                        или используйте Email для регистрации
-                    </span>
-                    */}
-                    <input type="text" placeholder="Имя" onChange={(e) => setUser(e.target.value)} />
-                    <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
-                    <input type="password" placeholder="Пароль" onChange={(e) => setPass(e.target.value)} />
-                    {/*<a href="#">Забыли пароль?</a>*/}
-                    <button>Зарегистрироваться</button>
-                </form>
-            </div>
-            {renderLoginForm}
-            <div className="toggle-container">
-                <div className="toggle">
-                    <div className="toggle-panel toggle-left">
-                        <h1>С возвращением!</h1>
-                        <p>Введите свои персональные данные, чтобы пользоваться полным функционалом сайта</p>
-                        <button type="button" className="hidden" id="login" onClick={selectLogin}>
-                            Войти
-                        </button>
-                    </div>
-                    <div className="toggle-panel toggle-right">
-                        <h1>Привет, друг!</h1>
-                        <p>Зарегистрируйтесь, введя свои персональные данные</p>
-                        <button type="button" className="hidden" id="register" onClick={selectRegister}>
-                            Создать
-                        </button>
+        <body style={{backgroundColor: '#e2e2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '90vh'}}>
+            <div className="container" id="container">
+                <div className="form-container sign-up">
+                    <form onSubmit={handleRegisterClick}>
+                        <h1>Создайте аккаунт</h1>
+                        {/*
+                        <div className="social-icons">
+                            <a href="#" className="icon">
+                                <FontAwesomeIcon icon={faVk} />
+                            </a>
+                            <a href="#" className="icon">
+                                <FontAwesomeIcon icon={faGoogle} />
+                            </a>
+                        </div>
+                        
+                        <span>
+                            или используйте Email для регистрации
+                        </span>
+                        */}
+                        <input type="text" placeholder="Имя" onChange={(e) => setUser(e.target.value)} />
+                        <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
+                        <input type="password" placeholder="Пароль" onChange={(e) => setPass(e.target.value)} />
+                        {/*<a href="#">Забыли пароль?</a>*/}
+                        <button>Зарегистрироваться</button>
+                    </form>
+                </div>
+                <div className="form-container sign-in">
+                    <form onSubmit={handleLoginClick}>
+                        <h1>Войти в аккаунт</h1>
+                        {/*
+                        <div className="social-icons">
+                            <a href="#" className="icon">
+                                <FontAwesomeIcon icon={faVk} />
+                            </a>
+                            <a href="#" className="icon">
+                                <FontAwesomeIcon icon={faGoogle} />
+                            </a>
+                        </div>
+                        <span>
+                            или используйте Email и пароль
+                        </span>
+                        */}
+                        <input type="text" placeholder="Имя" onChange={(e) => setUser(e.target.value)} />
+                        <input type="password" placeholder="Пароль" onChange={(e) => setPass(e.target.value)} />
+                        {/*<a href="#">Забыли пароль?</a>*/}
+                        <button>Войти</button>
+                    </form>
+                </div>
+                <div className="toggle-container">
+                    <div className="toggle">
+                        <div className="toggle-panel toggle-left">
+                            <h1>С возвращением!</h1>
+                            <p>Введите свои персональные данные, чтобы пользоваться полным функционалом сайта</p>
+                            <button type="button" className="hidden" id="login" onClick={selectLogin}>
+                                Войти
+                            </button>
+                        </div>
+                        <div className="toggle-panel toggle-right">
+                            <h1>Привет, друг!</h1>
+                            <p>Зарегистрируйтесь, введя свои персональные данные</p>
+                            <button type="button" className="hidden" id="register" onClick={selectRegister}>
+                                Создать
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </body>
     );
 }
 
